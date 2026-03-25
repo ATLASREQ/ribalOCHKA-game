@@ -14,6 +14,7 @@
             --rare: #0077ff; 
             --epic: #8e44ad;
             --legend: #e67e22; 
+            --danger: #e74c3c;
         }
 
         body { 
@@ -71,6 +72,9 @@
         button:active { transform: translateY(2px); box-shadow: 0 2px 0 #0056b3; }
         button:disabled { background: #adb5bd; box-shadow: 0 4px 0 #6c757d; cursor: not-allowed; }
 
+        .btn-reset { background: var(--danger); box-shadow: 0 4px 0 #c0392b; margin-top: 15px; font-size: 14px; padding: 8px 15px; }
+        .btn-reset:active { box-shadow: 0 2px 0 #c0392b; }
+
         .log-box { background: rgba(255, 251, 230, 0.8); padding: 10px; border-radius: 10px; border: 1px solid #ffe58f; margin-bottom: 15px; font-size: 13px; text-align: left; }
         .log-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
         .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #eee; }
@@ -82,21 +86,8 @@
         #chat-box { height: 130px; overflow-y: auto; background: rgba(241, 248, 255, 0.8); padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
         .chat-msg { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); }
 
-        /* СЕТКА ДЛЯ ИНВЕНТАРЯ */
-        #inventory-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 10px; 
-            margin-top: 10px;
-        }
-        .inv-item { 
-            display: flex; 
-            align-items: center; 
-            background: rgba(255, 255, 255, 0.7); 
-            padding: 8px; 
-            border-radius: 12px; 
-            border: 1px solid rgba(0,0,0,0.05);
-        }
+        #inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .inv-item { display: flex; align-items: center; background: rgba(255, 255, 255, 0.7); padding: 8px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); }
         .inv-icon { width: 35px; height: 35px; margin-right: 8px; object-fit: cover; border-radius: 6px; }
         .inv-info { text-align: left; font-size: 12px; line-height: 1.2; }
     </style>
@@ -141,6 +132,7 @@
         <div id="inventory">
             <h4 style="margin: 10px 0 5px 0;">🎒 Мой садок:</h4>
             <div id="inventory-grid"></div>
+            <button class="btn-reset" onclick="clearMyData()">🗑️ Очистить садок</button>
         </div>
     </div>
 
@@ -206,6 +198,16 @@
         }
         invGrid.innerHTML = invHtml;
         document.getElementById("inventory").style.display = invHtml ? "block" : "none";
+    }
+
+    // НОВАЯ ФУНКЦИЯ ОЧИСТКИ
+    function clearMyData() {
+        if(confirm("Выбросить всю рыбу из садка и обнулить свой вес?")) {
+            localStorage.removeItem("stats");
+            localStorage.removeItem("inventory");
+            alert("Садок пуст!");
+            location.reload();
+        }
     }
 
     function saveNick() {
@@ -303,7 +305,7 @@
             localStorage.setItem("inventory", JSON.stringify(inventory));
             updateUI(); 
             savePlayer(); 
-            startCooldown(600000); // 10 минут
+            startCooldown(600000); 
         }, 2500);
     };
 
@@ -319,7 +321,6 @@
 
         window.fishTimer = setInterval(() => {
             let remaining = endTime - Date.now();
-            
             if (remaining <= 0) {
                 clearInterval(window.fishTimer);
                 fishBtn.disabled = false;
@@ -327,7 +328,6 @@
                 localStorage.removeItem("cooldownEnd");
                 return;
             }
-
             let minutes = Math.floor(remaining / 60000);
             let seconds = Math.ceil((remaining % 60000) / 1000);
             seconds = seconds < 10 ? '0' + seconds : seconds;
@@ -338,11 +338,8 @@
     const savedCooldown = localStorage.getItem("cooldownEnd");
     if (savedCooldown) {
         const remaining = parseInt(savedCooldown) - Date.now();
-        if (remaining > 0) {
-            runTimer(parseInt(savedCooldown));
-        } else {
-            localStorage.removeItem("cooldownEnd");
-        }
+        if (remaining > 0) runTimer(parseInt(savedCooldown));
+        else localStorage.removeItem("cooldownEnd");
     }
 
     updateUI(); 
