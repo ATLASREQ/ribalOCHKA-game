@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>🎣 Гранд Рыбалка: Макси-Трофеи</title>
+    <title>🎣 Гранд Рыбалка: Русские Водоемы</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #0077ff; --bg: #e0f2ff; --panel: #ffffff; --text: #2c3e50; }
+        :root { --primary: #0077ff; --bg: #e0f2ff; --panel: #ffffff; --text: #2c3e50; --rare: #8e44ad; --legend: #e67e22; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); background-image: linear-gradient(180deg, #6ec6ff 0%, #e0f2ff 100%); margin: 0; padding: 20px; color: var(--text); min-height: 100vh; text-align: center; }
         .container { max-width: 500px; margin: 0 auto; }
         .panel { background: var(--panel); padding: 20px; margin-bottom: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.3); position: relative; }
@@ -16,29 +16,9 @@
         .fishing-active #rod-animation { display: block; animation: cast 1s infinite ease-in-out; }
         @keyframes cast { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
-        #trophy-display { 
-            min-height: 250px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin: 10px 0; 
-            border: 2px dashed #ddd; 
-            border-radius: 15px; 
-            background: #f9f9f9; 
-            overflow: hidden; 
-            padding: 10px;
-        }
-        #trophy-img { 
-            width: 100%; 
-            height: 100%; 
-            max-height: 230px; 
-            display: none; 
-            animation: popIn 0.5s ease-out; 
-            border-radius: 10px; 
-            object-fit: contain; 
-        }
+        #trophy-display { min-height: 250px; display: flex; align-items: center; justify-content: center; margin: 10px 0; border: 2px dashed #ddd; border-radius: 15px; background: #f9f9f9; overflow: hidden; padding: 10px; }
+        #trophy-img { width: 100%; height: 100%; max-height: 230px; display: none; animation: popIn 0.5s ease-out; border-radius: 10px; object-fit: contain; }
         #trophy-placeholder { font-size: 60px; color: #ccc; }
-        
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         input, button { padding: 12px; font-size: 16px; border-radius: 10px; border: 2px solid #ddd; outline: none; }
@@ -50,13 +30,14 @@
         .log-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
         .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #eee; }
 
-        /* ЧАТ: добавлена плавная прокрутка */
         #chat-box { height: 130px; overflow-y: auto; background: #f1f8ff; padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
         .chat-msg { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); }
 
         #inventory { text-align: left; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
         .inv-item { display: flex; align-items: center; margin-bottom: 6px; background: #f8f9fa; padding: 6px; border-radius: 10px; }
         .inv-icon { width: 40px; height: 40px; margin-right: 12px; object-fit: cover; border-radius: 6px; }
+        .rare-txt { color: var(--rare); font-weight: bold; }
+        .legend-txt { color: var(--legend); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -74,7 +55,7 @@
             <span id="trophy-placeholder">?</span>
             <img id="trophy-img" src="" alt="Трофей">
         </div>
-        <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Готов к забросу?</div>
+        <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Закидывай удочку!</div>
         <button id="fishBtn">ЗАБРОСИТЬ</button>
         <div id="timer" style="color: #e74c3c; margin-top:10px; font-weight:bold; min-height: 20px;"></div>
     </div>
@@ -110,12 +91,27 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6c215aWZxbXNiZGtyaGNocmdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NjQ0MjAsImV4cCI6MjA5MDA0MDQyMH0.uWwvjhQL_yEaaCCUnYIYSVHj-bNdbEJ-yPACrbeJGP4";
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    // РАСШИРЕННЫЙ СПИСОК РЫБ
     const fishes = [
-        { name: "Карась", rarity: "common", chance: 30, minW: 0.2, maxW: 1.5, image: "https://i.ytimg.com/vi/Vy8rRsfMbYY/maxresdefault.jpg" },
-        { name: "Окунь", rarity: "common", chance: 25, minW: 0.3, maxW: 2.5, image: "https://i.ytimg.com/vi/N55g_NvEu9c/maxresdefault.jpg" },
-        { name: "Сом", rarity: "rare", chance: 10, minW: 5.0, maxW: 50.0, image: "https://avatars.mds.yandex.net/i?id=f25c27a2e5c2428546dbeb9d5642cc59c897acb0-5233251-images-thumbs&n=13" },
-        { name: "Золотая рыбка", rarity: "rare", chance: 5, minW: 0.1, maxW: 0.5, image: "https://avatars.mds.yandex.net/i?id=6f716f0df1f0e64f128187c743e49ef3_l-6516498-images-thumbs&n=13" },
-        { name: "Кракен", rarity: "legend", chance: 1, minW: 500.0, maxW: 2500.0, image: "https://avatars.mds.yandex.net/i?id=dd13a6e98bdf167c5b86c86dc71fea0da385b381-5888173-images-thumbs&n=13" }
+        { name: "Уклейка", rarity: "common", chance: 15, minW: 0.02, maxW: 0.1, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Alburnus_alburnus_2.jpg/1200px-Alburnus_alburnus_2.jpg" },
+        { name: "Плотва", rarity: "common", chance: 15, minW: 0.1, maxW: 0.8, image: "https://pohod-v-les.ru/wp-content/uploads/2019/12/plotva-1.jpg" },
+        { name: "Карась", rarity: "common", chance: 12, minW: 0.2, maxW: 1.5, image: "https://i.ytimg.com/vi/Vy8rRsfMbYY/maxresdefault.jpg" },
+        { name: "Окунь", rarity: "common", chance: 12, minW: 0.3, maxW: 2.0, image: "https://i.ytimg.com/vi/N55g_NvEu9c/maxresdefault.jpg" },
+        { name: "Красноперка", rarity: "common", chance: 10, minW: 0.1, maxW: 0.6, image: "https://vsegda-pomnim.com/uploads/posts/2022-04/1649136125_48-vsegda-pomnim-com-p-krasnoperka-riba-foto-55.jpg" },
+        
+        { name: "Лещ", rarity: "uncommon", chance: 8, minW: 1.0, maxW: 5.0, image: "https://s1.funon.cc/img/orig/201804/10/5acc74cae697d.jpg" },
+        { name: "Карп", rarity: "uncommon", chance: 7, minW: 2.0, maxW: 12.0, image: "https://cat-fishing.ru/wp-content/uploads/2019/07/rechnoy_karp.jpg" },
+        { name: "Линь", rarity: "uncommon", chance: 6, minW: 0.5, maxW: 3.5, image: "https://yandex-images.clstorage.net/8S7N29L31/6a386duD/Y7NqN-n7e-o-m6H9Xyv-m2z6IuV-k2n-l-m6H9Xyv-m2z6IuV-k2n-l-m6H9Xyv-m2z6IuV-k2n-l-m6H9Xyv-m2z6IuV-k2n-l" },
+        
+        { name: "Щука", rarity: "rare", chance: 5, minW: 1.5, maxW: 15.0, image: "https://i.pinimg.com/originals/94/80/7e/94807e6005d5d886918843c0807897f1.jpg" },
+        { name: "Судак", rarity: "rare", chance: 4, minW: 1.0, maxW: 10.0, image: "https://www.all-fishing.ru/_ph/10/386053351.jpg" },
+        { name: "Налим", rarity: "rare", chance: 3, minW: 1.0, maxW: 8.0, image: "https://yobte.ru/uploads/posts/2019-11/nalim-46-foto-29.jpg" },
+        
+        { name: "Сом", rarity: "epic", chance: 2, minW: 10.0, maxW: 80.0, image: "https://avatars.mds.yandex.net/i?id=f25c27a2e5c2428546dbeb9d5642cc59c897acb0-5233251-images-thumbs&n=13" },
+        { name: "Стерлядь", rarity: "epic", chance: 0.8, minW: 0.5, maxW: 4.0, image: "https://vsegda-pomnim.com/uploads/posts/2022-04/1649137267_26-vsegda-pomnim-com-p-riba-sterlyad-foto-27.jpg" },
+        
+        { name: "Золотая рыбка", rarity: "legend", chance: 0.1, minW: 0.1, maxW: 0.5, image: "https://avatars.mds.yandex.net/i?id=6f716f0df1f0e64f128187c743e49ef3_l-6516498-images-thumbs&n=13" },
+        { name: "Осетр", rarity: "legend", chance: 0.1, minW: 20.0, maxW: 150.0, image: "https://yobte.ru/uploads/posts/2019-11/osetr-44-foto-12.jpg" }
     ];
 
     const trophyImg = document.getElementById("trophy-img");
@@ -134,7 +130,7 @@
         document.getElementById("stat-weight").innerText = stats.totalWeight.toFixed(1);
         document.getElementById("stat-count").innerText = stats.caught;
         
-        let invHtml = "<h4>🎒 Твой инвентарь:</h4>";
+        let invHtml = "<h4>🎒 Мой садок:</h4>";
         for (let name in inventory) {
             let f = fishes.find(x => x.name === name);
             if(f) invHtml += `<div class="inv-item"><img src="${f.image}" class="inv-icon"> <div><b>${name}</b><br><small>${inventory[name].count} шт. — ${inventory[name].weight.toFixed(1)} кг</small></div></div>`;
@@ -175,11 +171,9 @@
             const { data: top } = await db.from("players").select("*").order("fish", { ascending: false }).limit(10);
             if (top) document.getElementById("leaderboard").innerHTML = top.map((p, i) => `<b>${i+1}.</b> ${p.nickname} — ⚖️ <b>${p.fish} кг</b>`).join("<br>");
             
-            // ЧАТ: Порядок ascending: true (новые внизу)
             const { data: msgs } = await db.from("messages").select("*").order("id", { ascending: true }).limit(20);
             if (msgs) {
                 chatBox.innerHTML = msgs.map(m => `<div class="chat-msg"><b>${m.nickname}:</b> ${m.text}</div>`).join("");
-                // Скролл вниз
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
 
@@ -201,13 +195,20 @@
         trophyImg.style.display = "none";
         trophyPlaceholder.style.display = "block";
         document.getElementById("main-game").classList.add("fishing-active");
-        resultDiv.innerText = "Удочка заброшена...";
+        resultDiv.innerText = "Закидываем наживку...";
 
         setTimeout(async () => {
             document.getElementById("main-game").classList.remove("fishing-active");
-            if (Math.random() < 0.7) {
-                let roll = Math.random() * 71, sum = 0, f = fishes[0];
-                for (let x of fishes) { sum += x.chance; if (roll < sum) { f = x; break; } }
+            if (Math.random() < 0.75) { // Шанс поклевки 75%
+                let totalChance = fishes.reduce((s, f) => s + f.chance, 0);
+                let roll = Math.random() * totalChance;
+                let sum = 0, f = fishes[0];
+                
+                for (let x of fishes) {
+                    sum += x.chance;
+                    if (roll < sum) { f = x; break; }
+                }
+                
                 let w = Math.random() * (f.maxW - f.minW) + f.minW;
                 
                 stats.caught++; 
@@ -219,11 +220,13 @@
                 trophyImg.src = f.image;
                 trophyImg.style.display = "block";
                 trophyPlaceholder.style.display = "none";
-                resultDiv.innerHTML = `Поймал: <span style="color:var(--primary)">${f.name}</span> (${w.toFixed(1)} кг)!`;
+                
+                let rarityClass = (f.rarity === 'rare' || f.rarity === 'epic') ? 'rare-txt' : (f.rarity === 'legend' ? 'legend-txt' : '');
+                resultDiv.innerHTML = `Поймал: <span class="${rarityClass}">${f.name}</span> (${w.toFixed(1)} кг)!`;
                 
                 await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
             } else {
-                resultDiv.innerText = "Рыба сорвалась... Попробуй еще раз!";
+                resultDiv.innerText = "Рыба сорвалась... Попробуй в другом месте!";
             }
             
             localStorage.setItem("stats", JSON.stringify(stats));
