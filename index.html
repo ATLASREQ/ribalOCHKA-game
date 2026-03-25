@@ -93,25 +93,25 @@
 
     // РАСШИРЕННЫЙ СПИСОК РЫБ
     const fishes = [
-        { name: "Уклейка", rarity: "common", chance: 15, minW: 0.02, maxW: 0.1, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Alburnus_alburnus_2.jpg/1200px-Alburnus_alburnus_2.jpg" },
-        { name: "Плотва", rarity: "common", chance: 15, minW: 0.1, maxW: 0.8, image: "https://pohod-v-les.ru/wp-content/uploads/2019/12/plotva-1.jpg" },
+        { name: "Уклейка", rarity: "common", chance: 15, minW: 0.02, maxW: 0.1, image: "https://avatars.mds.yandex.net/i?id=c6549a78d671a871bc4b2e2a70ba497febe68eda-4011145-images-thumbs&n=13" },
+        { name: "Плотва", rarity: "common", chance: 15, minW: 0.1, maxW: 0.8, image: "https://avatars.mds.yandex.net/i?id=7a9554ada6dae4229dac2d6bef28d4dc4ad38dde-5294444-images-thumbs&n=13" },
         { name: "Карась", rarity: "common", chance: 12, minW: 0.2, maxW: 1.5, image: "https://i.ytimg.com/vi/Vy8rRsfMbYY/maxresdefault.jpg" },
         { name: "Окунь", rarity: "common", chance: 12, minW: 0.3, maxW: 2.0, image: "https://i.ytimg.com/vi/N55g_NvEu9c/maxresdefault.jpg" },
-        { name: "Красноперка", rarity: "common", chance: 10, minW: 0.1, maxW: 0.6, image: "https://vsegda-pomnim.com/uploads/posts/2022-04/1649136125_48-vsegda-pomnim-com-p-krasnoperka-riba-foto-55.jpg" },
+        { name: "Красноперка", rarity: "common", chance: 10, minW: 0.1, maxW: 0.6, image: "https://avatars.mds.yandex.net/i?id=b8462671a2ad83586df8ff0c6ebe8dc3_l-4432629-images-thumbs&n=13" },
         
-        { name: "Лещ", rarity: "uncommon", chance: 8, minW: 1.0, maxW: 5.0, image: "https://s1.funon.cc/img/orig/201804/10/5acc74cae697d.jpg" },
-        { name: "Карп", rarity: "uncommon", chance: 7, minW: 2.0, maxW: 12.0, image: "https://cat-fishing.ru/wp-content/uploads/2019/07/rechnoy_karp.jpg" },
-        { name: "Линь", rarity: "uncommon", chance: 6, minW: 0.5, maxW: 3.5, image: "https://yandex-images.clstorage.net/8S7N29L31/6a386duD/Y7NqN-n7e-o-m6H9Xyv-m2z6IuV-k2n-l-m6H9Xyv-m2z6IuV-k2n-l-m6H9Xyv-m2z6IuV-k2n-l-m6H9Xyv-m2z6IuV-k2n-l" },
+        { name: "Лещ", rarity: "uncommon", chance: 8, minW: 1.0, maxW: 5.0, image: "https://avatars.mds.yandex.net/i?id=9cf63d5f6abe30988807f5aa110197fe_l-5848407-images-thumbs&n=13" },
+        { name: "Карп", rarity: "uncommon", chance: 7, minW: 2.0, maxW: 12.0, image: "https://avatars.mds.yandex.net/i?id=1f5fc0e21d434978df4dcf0cf87e493dcb060868-5870172-images-thumbs&n=13" },
+        { name: "Линь", rarity: "uncommon", chance: 6, minW: 0.5, maxW: 3.5, image: "https://avatars.mds.yandex.net/i?id=8a1b1081d346fca38a38f2673fb65b3ec7d107de-16795535-images-thumbs&n=13" },
         
-        { name: "Щука", rarity: "rare", chance: 5, minW: 1.5, maxW: 15.0, image: "https://i.pinimg.com/originals/94/80/7e/94807e6005d5d886918843c0807897f1.jpg" },
-        { name: "Судак", rarity: "rare", chance: 4, minW: 1.0, maxW: 10.0, image: "https://www.all-fishing.ru/_ph/10/386053351.jpg" },
-        { name: "Налим", rarity: "rare", chance: 3, minW: 1.0, maxW: 8.0, image: "https://yobte.ru/uploads/posts/2019-11/nalim-46-foto-29.jpg" },
+        { name: "Щука", rarity: "rare", chance: 5, minW: 1.5, maxW: 15.0, image: "https://avatars.mds.yandex.net/i?id=fa768e0c65f5fa7d49eb004a911fd13d_l-4011302-images-thumbs&n=13" },
+        { name: "Судак", rarity: "rare", chance: 4, minW: 1.0, maxW: 10.0, image: "https://avatars.mds.yandex.net/i?id=fe3b832bba015ea10e580c4a509424d67cdba11f-5306350-images-thumbs&n=13" },
+        { name: "Налим", rarity: "rare", chance: 3, minW: 1.0, maxW: 8.0, image: "https://avatars.mds.yandex.net/i?id=60bd008f6f8f089542ea420285dfe843eb629550-17806471-images-thumbs&n=13" },
         
         { name: "Сом", rarity: "epic", chance: 2, minW: 10.0, maxW: 80.0, image: "https://avatars.mds.yandex.net/i?id=f25c27a2e5c2428546dbeb9d5642cc59c897acb0-5233251-images-thumbs&n=13" },
-        { name: "Стерлядь", rarity: "epic", chance: 0.8, minW: 0.5, maxW: 4.0, image: "https://vsegda-pomnim.com/uploads/posts/2022-04/1649137267_26-vsegda-pomnim-com-p-riba-sterlyad-foto-27.jpg" },
+        { name: "Стерлядь", rarity: "epic", chance: 0.8, minW: 0.5, maxW: 4.0, image: "https://avatars.mds.yandex.net/i?id=9a170245e1e0d5f10163a3de560febf6_l-5392166-images-thumbs&n=13" },
         
         { name: "Золотая рыбка", rarity: "legend", chance: 0.1, minW: 0.1, maxW: 0.5, image: "https://avatars.mds.yandex.net/i?id=6f716f0df1f0e64f128187c743e49ef3_l-6516498-images-thumbs&n=13" },
-        { name: "Осетр", rarity: "legend", chance: 0.1, minW: 20.0, maxW: 150.0, image: "https://yobte.ru/uploads/posts/2019-11/osetr-44-foto-12.jpg" }
+        { name: "Осетр", rarity: "legend", chance: 0.1, minW: 20.0, maxW: 150.0, image: "https://i.pinimg.com/736x/a5/5a/18/a55a18d9af024706fc06549cd15d1713.jpg" }
     ];
 
     const trophyImg = document.getElementById("trophy-img");
