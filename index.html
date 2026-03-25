@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>🎣 Гранд Рыбалка: Трофейная Охота</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -10,42 +11,32 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); background-image: linear-gradient(180deg, #6ec6ff 0%, #e0f2ff 100%); margin: 0; padding: 20px; color: var(--text); min-height: 100vh; text-align: center; }
         .container { max-width: 500px; margin: 0 auto; }
         .panel { background: var(--panel); padding: 20px; margin-bottom: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.3); position: relative; }
-        
         #rod-animation { font-size: 50px; height: 60px; display: none; margin: 10px 0; }
         .fishing-active #rod-animation { display: block; animation: cast 1s infinite ease-in-out; }
         @keyframes cast { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
         #trophy-display { min-height: 150px; display: flex; align-items: center; justify-content: center; margin: 10px 0; border: 2px dashed #ddd; border-radius: 15px; background: #f9f9f9; overflow: hidden; }
-        #trophy-img { max-width: 140px; max-height: 140px; display: none; animation: popIn 0.5s ease-out; border-radius: 10px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #trophy-img { max-width: 140px; max-height: 140px; display: none; animation: popIn 0.5s ease-out; border-radius: 10px; object-fit: cover; }
         #trophy-placeholder { font-size: 50px; color: #ccc; }
-
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
-
         input { padding: 12px; font-size: 16px; border-radius: 10px; border: 2px solid #ddd; width: 70%; margin-bottom: 10px; outline: none;}
         button { font-size: 18px; padding: 12px 25px; cursor: pointer; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; box-shadow: 0 4px 0 #0056b3; transition: all 0.1s; }
         button:active { transform: translateY(2px); box-shadow: 0 2px 0 #0056b3; }
         button:disabled { background: #adb5bd; box-shadow: 0 4px 0 #6c757d; cursor: not-allowed; }
-        
         #result { font-size: 20px; font-weight: bold; margin: 10px 0; min-height: 25px; }
-        .common { color: #5d6d7e; } .rare { color: #0077ff; } .legend { color: #ff9900; }
-        
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-weight: bold; font-size: 18px; }
         #inventory, #leaderboard { text-align: left; line-height: 1.6; }
         .inv-item { display: flex; align-items: center; margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .inv-icon { width: 35px; height: 35px; margin-right: 12px; object-fit: cover; border-radius: 5px; }
+        .inv-icon { width: 35px; height: 35px; margin-right: 12px; object-fit: cover; border-radius: 5px; background: #eee; }
         .weight-tag { background: #eee; padding: 2px 6px; border-radius: 5px; font-size: 12px; margin-left: auto; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <h1>🎣 Гранд Рыбалка</h1>
-
     <div class="panel">
         <input type="text" id="nickname" placeholder="Твой ник...">
         <button onclick="saveNick()">💾</button>
     </div>
-
     <div class="panel" id="main-game">
         <div id="rod-animation">🎣</div>
         <div id="trophy-display">
@@ -56,23 +47,14 @@
         <button id="fishBtn">ЗАБРОСИТЬ</button>
         <div id="timer" style="color: #e74c3c; margin-top:10px; font-weight:bold;"></div>
     </div>
-
     <div class="panel">
         <div class="stats-grid">
             <div>⚖️ Вес: <span id="stat-weight">0</span> кг</div>
             <div>🐟 Рыб: <span id="stat-count">0</span></div>
         </div>
     </div>
-
-    <div class="panel">
-        <h3>🎒 Твой инвентарь</h3>
-        <div id="inventory">Пусто</div>
-    </div>
-
-    <div class="panel">
-        <h3>🏆 Топ по массе (кг)</h3>
-        <div id="leaderboard">Загрузка...</div>
-    </div>
+    <div class="panel"><h3>🎒 Твой инвентарь</h3><div id="inventory">Пусто</div></div>
+    <div class="panel"><h3>🏆 Топ по массе (кг)</h3><div id="leaderboard">Загрузка...</div></div>
 </div>
 
 <script>
@@ -81,23 +63,21 @@
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     const fishes = [
-        { name: "Карась", rarity: "common", chance: 30, minW: 0.2, maxW: 1.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Carassius_carassius_Prague_Vltava_2.jpg/640px-Carassius_carassius_Prague_Vltava_2.jpg" },
-        { name: "Окунь", rarity: "common", chance: 25, minW: 0.3, maxW: 2.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Perch_Gervais.jpg/640px-Perch_Gervais.jpg" },
-        { name: "Сом", rarity: "rare", chance: 10, minW: 5.0, maxW: 50.0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Silurus_glanis_02.jpg/640px-Silurus_glanis_02.jpg" },
-        { name: "Золотая рыбка", rarity: "rare", chance: 5, minW: 0.1, maxW: 0.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Goldfish_3.jpg/640px-Goldfish_3.jpg" },
-        { name: "Кракен", rarity: "legend", chance: 1, minW: 500.0, maxW: 2500.0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Giant_squid_v1.jpg/640px-Giant_squid_v1.jpg" }
+        { name: "Карась", rarity: "common", chance: 30, minW: 0.2, maxW: 1.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Carassius_carassius_Prague_Vltava_2.jpg/400px-Carassius_carassius_Prague_Vltava_2.jpg" },
+        { name: "Окунь", rarity: "common", chance: 25, minW: 0.3, maxW: 2.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Perch_Gervais.jpg/400px-Perch_Gervais.jpg" },
+        { name: "Сом", rarity: "rare", chance: 10, minW: 5.0, maxW: 50.0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Silurus_glanis_02.jpg/400px-Silurus_glanis_02.jpg" },
+        { name: "Золотая рыбка", rarity: "rare", chance: 5, minW: 0.1, maxW: 0.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Goldfish_3.jpg/400px-Goldfish_3.jpg" },
+        { name: "Кракен", rarity: "legend", chance: 1, minW: 500.0, maxW: 2500.0, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Giant_squid_v1.jpg/400px-Giant_squid_v1.jpg" }
     ];
 
     let nickname = localStorage.getItem("nick") || "";
     document.getElementById("nickname").value = nickname;
-    
     let stats, inventory;
     try {
         stats = JSON.parse(localStorage.getItem("stats")) || { caught: 0, totalWeight: 0 };
         inventory = JSON.parse(localStorage.getItem("inventory")) || {};
     } catch(e) {
-        stats = { caught: 0, totalWeight: 0 };
-        inventory = {};
+        stats = { caught: 0, totalWeight: 0 }; inventory = {};
     }
 
     function saveNick() {
@@ -111,101 +91,73 @@
     async function savePlayer() {
         if (!nickname) return;
         try {
-            await db.from("players").upsert({ 
-                nickname: nickname, 
-                fish: Number(stats.totalWeight.toFixed(1))
-            }, { onConflict: 'nickname' });
-        } catch (e) { console.error("Ошибка сохранения:", e); }
+            await db.from("players").upsert({ nickname: nickname, fish: Number(stats.totalWeight.toFixed(1)) }, { onConflict: 'nickname' });
+        } catch (e) { console.error(e); }
     }
 
     async function loadLeaderboard() {
         try {
-            const { data, error } = await db.from("players").select("*").order("fish", { ascending: false }).limit(10);
-            if (error) throw error;
-            document.getElementById("leaderboard").innerHTML = data.map((p, i) => 
-                `<b>${i + 1}.</b> ${p.nickname} — ⚖️ <b>${p.fish || 0} кг</b>`
-            ).join("<br>");
-        } catch (e) { document.getElementById("leaderboard").innerText = "Ошибка загрузки"; }
+            const { data } = await db.from("players").select("*").order("fish", { ascending: false }).limit(10);
+            if (data) {
+                document.getElementById("leaderboard").innerHTML = data.map((p, i) => `<b>${i + 1}.</b> ${p.nickname} — ⚖️ <b>${p.fish || 0} кг</b>`).join("<br>");
+            }
+        } catch (e) { console.error(e); }
     }
 
     function updateUI() {
         let invHtml = "";
         for (let fName in inventory) {
-            let fishData = fishes.find(f => f.name === fName);
-            if (fishData) {
-                invHtml += `<div class="inv-item"><img src="${fishData.image}" class="inv-icon"><b>${fName}</b>: ${inventory[fName].count} шт. <span class="weight-tag">${inventory[fName].weight.toFixed(1)} кг</span></div>`;
-            }
+            let f = fishes.find(x => x.name === fName);
+            if (f) invHtml += `<div class="inv-item"><img src="${f.image}" class="inv-icon"><b>${fName}</b>: ${inventory[fName].count} шт. <span class="weight-tag">${inventory[fName].weight.toFixed(1)} кг</span></div>`;
         }
         document.getElementById("inventory").innerHTML = invHtml || "Пусто";
         document.getElementById("stat-weight").innerText = stats.totalWeight.toFixed(1);
         document.getElementById("stat-count").innerText = stats.caught;
     }
 
-    const btn = document.getElementById("fishBtn");
-    const trophyImg = document.getElementById("trophy-img");
-    const trophyPlaceholder = document.getElementById("trophy-placeholder");
-
-    btn.onclick = async function() {
-        if (!nickname) return alert("Сначала ник!");
+    document.getElementById("fishBtn").onclick = async function() {
+        if (!nickname) return alert("Введи ник!");
+        const b = this;
         trophyImg.style.display = "none";
         trophyPlaceholder.style.display = "block";
         document.getElementById("main-game").classList.add("fishing-active");
-        btn.disabled = true;
+        b.disabled = true;
         document.getElementById("result").innerText = "Закидываем...";
 
         setTimeout(async () => {
             document.getElementById("main-game").classList.remove("fishing-active");
             if (Math.random() < 0.7) {
-                let roll = Math.random() * 71; 
-                let sum = 0, fishType = fishes[0];
-                for (let f of fishes) {
-                    sum += f.chance;
-                    if (roll < sum) { fishType = f; break; }
-                }
-                let weight = Math.random() * (fishType.maxW - fishType.minW) + fishType.minW;
-                if(!inventory[fishType.name]) inventory[fishType.name] = { count: 0, weight: 0 };
-                inventory[fishType.name].count++;
-                inventory[fishType.name].weight += weight;
-                stats.caught++;
-                stats.totalWeight += weight;
-                trophyImg.src = fishType.image;
+                let roll = Math.random() * 71, sum = 0, f = fishes[0];
+                for (let x of fishes) { sum += x.chance; if (roll < sum) { f = x; break; } }
+                let w = Math.random() * (f.maxW - f.minW) + f.minW;
+                if(!inventory[f.name]) inventory[f.name] = { count: 0, weight: 0 };
+                inventory[f.name].count++; inventory[f.name].weight += w;
+                stats.caught++; stats.totalWeight += w;
+                trophyImg.src = f.image;
                 trophyImg.style.display = "block";
                 trophyPlaceholder.style.display = "none";
-                document.getElementById("result").innerHTML = `Поймал: <span class="${fishType.rarity}">${fishType.name}</span> (${weight.toFixed(1)} кг)!`;
+                document.getElementById("result").innerHTML = `Поймал: ${f.name} (${w.toFixed(1)} кг)!`;
             } else {
                 document.getElementById("result").innerText = "Сорвалось...";
             }
             localStorage.setItem("inventory", JSON.stringify(inventory));
             localStorage.setItem("stats", JSON.stringify(stats));
-            updateUI();
-            await savePlayer();
-            loadLeaderboard();
-            startCooldown(15000); 
+            updateUI(); await savePlayer(); loadLeaderboard(); startCooldown(10000); 
         }, 2000);
     };
 
     function startCooldown(ms) {
-        btn.disabled = true;
+        const b = document.getElementById("fishBtn");
+        b.disabled = true;
         let end = Date.now() + ms;
-        localStorage.setItem("nextTry", end);
-        let timerTick = setInterval(() => {
-            let left = end - Date.now();
-            if (left <= 0) {
-                clearInterval(timerTick);
-                btn.disabled = false;
-                document.getElementById("timer").innerText = "";
-                return;
-            }
-            document.getElementById("timer").innerText = `Ждем: ${Math.ceil(left/1000)} сек.`;
+        let t = setInterval(() => {
+            let l = end - Date.now();
+            if (l <= 0) { clearInterval(t); b.disabled = false; document.getElementById("timer").innerText = ""; return; }
+            document.getElementById("timer").innerText = `Ждем: ${Math.ceil(l/1000)} сек.`;
         }, 1000);
     }
 
-    let savedNext = localStorage.getItem("nextTry");
-    if (savedNext && (savedNext - Date.now() > 0)) startCooldown(savedNext - Date.now());
-
-    updateUI();
-    loadLeaderboard();
-    // Авто-обновление топа каждые 30 секунд
+    updateUI(); loadLeaderboard();
     setInterval(loadLeaderboard, 30000);
 </script>
 </body>
