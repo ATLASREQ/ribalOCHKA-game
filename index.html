@@ -4,19 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>🎣 Гранд Рыбалка: Русские Водоемы</title>
+    <title>🎣 Рыбалка для дизайнеров</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #0077ff; --bg: #e0f2ff; --panel: #ffffff; --text: #2c3e50; --rare: #8e44ad; --legend: #e67e22; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); background-image: linear-gradient(180deg, #6ec6ff 0%, #e0f2ff 100%); margin: 0; padding: 20px; color: var(--text); min-height: 100vh; text-align: center; }
-        .container { max-width: 500px; margin: 0 auto; }
-        .panel { background: var(--panel); padding: 20px; margin-bottom: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.3); position: relative; }
+        :root { 
+            --primary: #0077ff; 
+            --bg: #e0f2ff; 
+            --panel: rgba(255, 255, 255, 0.9); 
+            --text: #2c3e50; 
+            --rare: #0077ff; 
+            --epic: #8e44ad;
+            --legend: #e67e22; 
+        }
+
+        /* ОСНОВНОЙ ФОН С ГРАДИЕНТОМ И ПАТТЕРНОМ */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg); 
+            background-image: linear-gradient(180deg, #6ec6ff 0%, #e0f2ff 100%); 
+            margin: 0; 
+            padding: 20px; 
+            color: var(--text); 
+            min-height: 100vh; 
+            text-align: center; 
+            position: relative;
+        }
+
+        /* СЛОЙ С ПАТТЕРНОМ ВОЛН */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('image_c38c09.jpg'); /* Твой паттерн */
+            background-repeat: repeat;
+            background-size: 150px;
+            opacity: 0.1; /* Легкая прозрачность для стиля */
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; position: relative; z-index: 1; }
+        
+        .panel { 
+            background: var(--panel); 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+            border: 1px solid rgba(255,255,255,0.4); 
+            backdrop-filter: blur(5px);
+        }
         
         #rod-animation { font-size: 50px; height: 60px; display: none; margin: 10px 0; }
         .fishing-active #rod-animation { display: block; animation: cast 1s infinite ease-in-out; }
         @keyframes cast { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
-        #trophy-display { min-height: 250px; display: flex; align-items: center; justify-content: center; margin: 10px 0; border: 2px dashed #ddd; border-radius: 15px; background: #f9f9f9; overflow: hidden; padding: 10px; }
+        #trophy-display { min-height: 250px; display: flex; align-items: center; justify-content: center; margin: 10px 0; border: 2px dashed #ddd; border-radius: 15px; background: rgba(249, 249, 249, 0.5); overflow: hidden; padding: 10px; }
         #trophy-img { width: 100%; height: 100%; max-height: 230px; display: none; animation: popIn 0.5s ease-out; border-radius: 10px; object-fit: contain; }
         #trophy-placeholder { font-size: 60px; color: #ccc; }
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -26,23 +69,30 @@
         button:active { transform: translateY(2px); box-shadow: 0 2px 0 #0056b3; }
         button:disabled { background: #adb5bd; box-shadow: 0 4px 0 #6c757d; cursor: not-allowed; }
 
-        .log-box { background: #fffbe6; padding: 10px; border-radius: 10px; border: 1px solid #ffe58f; margin-bottom: 15px; font-size: 13px; text-align: left; }
+        /* ЛОГ И ЦВЕТА РАРИТЕТНОСТИ */
+        .log-box { background: rgba(255, 251, 230, 0.8); padding: 10px; border-radius: 10px; border: 1px solid #ffe58f; margin-bottom: 15px; font-size: 13px; text-align: left; }
         .log-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
         .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #eee; }
 
-        #chat-box { height: 130px; overflow-y: auto; background: #f1f8ff; padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
+        .rare-txt { color: var(--rare); font-weight: bold; }
+        .epic-txt { color: var(--epic); font-weight: bold; }
+        .legend-txt { 
+            color: var(--legend); 
+            font-weight: bold; 
+            text-shadow: 0 0 8px rgba(230, 126, 34, 0.3);
+        }
+
+        #chat-box { height: 130px; overflow-y: auto; background: rgba(241, 248, 255, 0.8); padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
         .chat-msg { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); }
 
         #inventory { text-align: left; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
-        .inv-item { display: flex; align-items: center; margin-bottom: 6px; background: #f8f9fa; padding: 6px; border-radius: 10px; }
+        .inv-item { display: flex; align-items: center; margin-bottom: 6px; background: rgba(248, 249, 250, 0.7); padding: 6px; border-radius: 10px; }
         .inv-icon { width: 40px; height: 40px; margin-right: 12px; object-fit: cover; border-radius: 6px; }
-        .rare-txt { color: var(--rare); font-weight: bold; }
-        .legend-txt { color: var(--legend); font-weight: bold; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🎣 Гранд Рыбалка</h1>
+    <h1>🎣 Рыбалка для дизайнеров</h1>
     
     <div class="panel">
         <input type="text" id="nickname" style="width:65%" placeholder="Твой ник...">
@@ -91,25 +141,20 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6c215aWZxbXNiZGtyaGNocmdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NjQ0MjAsImV4cCI6MjA5MDA0MDQyMH0.uWwvjhQL_yEaaCCUnYIYSVHj-bNdbEJ-yPACrbeJGP4";
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // РАСШИРЕННЫЙ СПИСОК РЫБ
     const fishes = [
         { name: "Уклейка", rarity: "common", chance: 15, minW: 0.02, maxW: 0.1, image: "https://avatars.mds.yandex.net/i?id=c6549a78d671a871bc4b2e2a70ba497febe68eda-4011145-images-thumbs&n=13" },
         { name: "Плотва", rarity: "common", chance: 15, minW: 0.1, maxW: 0.8, image: "https://avatars.mds.yandex.net/i?id=7a9554ada6dae4229dac2d6bef28d4dc4ad38dde-5294444-images-thumbs&n=13" },
         { name: "Карась", rarity: "common", chance: 12, minW: 0.2, maxW: 1.5, image: "https://i.ytimg.com/vi/Vy8rRsfMbYY/maxresdefault.jpg" },
         { name: "Окунь", rarity: "common", chance: 12, minW: 0.3, maxW: 2.0, image: "https://i.ytimg.com/vi/N55g_NvEu9c/maxresdefault.jpg" },
         { name: "Красноперка", rarity: "common", chance: 10, minW: 0.1, maxW: 0.6, image: "https://avatars.mds.yandex.net/i?id=b8462671a2ad83586df8ff0c6ebe8dc3_l-4432629-images-thumbs&n=13" },
-        
         { name: "Лещ", rarity: "uncommon", chance: 8, minW: 1.0, maxW: 5.0, image: "https://avatars.mds.yandex.net/i?id=9cf63d5f6abe30988807f5aa110197fe_l-5848407-images-thumbs&n=13" },
         { name: "Карп", rarity: "uncommon", chance: 7, minW: 2.0, maxW: 12.0, image: "https://avatars.mds.yandex.net/i?id=1f5fc0e21d434978df4dcf0cf87e493dcb060868-5870172-images-thumbs&n=13" },
         { name: "Линь", rarity: "uncommon", chance: 6, minW: 0.5, maxW: 3.5, image: "https://avatars.mds.yandex.net/i?id=8a1b1081d346fca38a38f2673fb65b3ec7d107de-16795535-images-thumbs&n=13" },
-        
         { name: "Щука", rarity: "rare", chance: 5, minW: 1.5, maxW: 15.0, image: "https://avatars.mds.yandex.net/i?id=fa768e0c65f5fa7d49eb004a911fd13d_l-4011302-images-thumbs&n=13" },
         { name: "Судак", rarity: "rare", chance: 4, minW: 1.0, maxW: 10.0, image: "https://avatars.mds.yandex.net/i?id=fe3b832bba015ea10e580c4a509424d67cdba11f-5306350-images-thumbs&n=13" },
         { name: "Налим", rarity: "rare", chance: 3, minW: 1.0, maxW: 8.0, image: "https://avatars.mds.yandex.net/i?id=60bd008f6f8f089542ea420285dfe843eb629550-17806471-images-thumbs&n=13" },
-        
         { name: "Сом", rarity: "epic", chance: 2, minW: 10.0, maxW: 80.0, image: "https://avatars.mds.yandex.net/i?id=f25c27a2e5c2428546dbeb9d5642cc59c897acb0-5233251-images-thumbs&n=13" },
         { name: "Стерлядь", rarity: "epic", chance: 0.8, minW: 0.5, maxW: 4.0, image: "https://avatars.mds.yandex.net/i?id=9a170245e1e0d5f10163a3de560febf6_l-5392166-images-thumbs&n=13" },
-        
         { name: "Золотая рыбка", rarity: "legend", chance: 0.1, minW: 0.1, maxW: 0.5, image: "https://avatars.mds.yandex.net/i?id=6f716f0df1f0e64f128187c743e49ef3_l-6516498-images-thumbs&n=13" },
         { name: "Осетр", rarity: "legend", chance: 0.1, minW: 20.0, maxW: 150.0, image: "https://i.pinimg.com/736x/a5/5a/18/a55a18d9af024706fc06549cd15d1713.jpg" }
     ];
@@ -182,7 +227,13 @@
                 document.getElementById("catch-log").innerHTML = history.map(h => {
                     let f = fishes.find(x => x.name === h.fish_name);
                     let img = f ? f.image : "";
-                    return `<div class="log-item"><img src="${img}" class="log-img"> <span><b>${h.nickname}</b> вытянул <b>${h.fish_name}</b> (${h.weight.toFixed(1)}кг)</span></div>`;
+                    let rClass = "";
+                    if(f) {
+                        if(f.rarity === 'rare') rClass = "rare-txt";
+                        else if(f.rarity === 'epic') rClass = "epic-txt";
+                        else if(f.rarity === 'legend') rClass = "legend-txt";
+                    }
+                    return `<div class="log-item"><img src="${img}" class="log-img"> <span><b>${h.nickname}</b> вытянул <b class="${rClass}">${h.fish_name}</b> (${h.weight.toFixed(1)}кг)</span></div>`;
                 }).join("");
             }
         } catch (e) {}
@@ -199,7 +250,7 @@
 
         setTimeout(async () => {
             document.getElementById("main-game").classList.remove("fishing-active");
-            if (Math.random() < 0.75) { // Шанс поклевки 75%
+            if (Math.random() < 0.75) {
                 let totalChance = fishes.reduce((s, f) => s + f.chance, 0);
                 let roll = Math.random() * totalChance;
                 let sum = 0, f = fishes[0];
@@ -210,7 +261,6 @@
                 }
                 
                 let w = Math.random() * (f.maxW - f.minW) + f.minW;
-                
                 stats.caught++; 
                 stats.totalWeight += w;
                 if(!inventory[f.name]) inventory[f.name] = { count: 0, weight: 0 };
@@ -221,7 +271,7 @@
                 trophyImg.style.display = "block";
                 trophyPlaceholder.style.display = "none";
                 
-                let rarityClass = (f.rarity === 'rare' || f.rarity === 'epic') ? 'rare-txt' : (f.rarity === 'legend' ? 'legend-txt' : '');
+                let rarityClass = (f.rarity === 'rare') ? 'rare-txt' : (f.rarity === 'epic' ? 'epic-txt' : (f.rarity === 'legend' ? 'legend-txt' : ''));
                 resultDiv.innerHTML = `Поймал: <span class="${rarityClass}">${f.name}</span> (${w.toFixed(1)} кг)!`;
                 
                 await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
