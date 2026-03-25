@@ -12,12 +12,10 @@
         .container { max-width: 500px; margin: 0 auto; }
         .panel { background: var(--panel); padding: 20px; margin-bottom: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.3); position: relative; }
         
-        /* Анимация удочки */
         #rod-animation { font-size: 50px; height: 60px; display: none; margin: 10px 0; }
         .fishing-active #rod-animation { display: block; animation: cast 1s infinite ease-in-out; }
         @keyframes cast { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
-        /* Область трофея - УВЕЛИЧЕНА */
         #trophy-display { 
             min-height: 250px; 
             display: flex; 
@@ -30,7 +28,6 @@
             overflow: hidden; 
             padding: 10px;
         }
-        /* Картинка рыбы - НА ВЕСЬ БЛОК */
         #trophy-img { 
             width: 100%; 
             height: 100%; 
@@ -49,16 +46,14 @@
         button:active { transform: translateY(2px); box-shadow: 0 2px 0 #0056b3; }
         button:disabled { background: #adb5bd; box-shadow: 0 4px 0 #6c757d; cursor: not-allowed; }
 
-        /* Лог уловов */
         .log-box { background: #fffbe6; padding: 10px; border-radius: 10px; border: 1px solid #ffe58f; margin-bottom: 15px; font-size: 13px; text-align: left; }
         .log-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
         .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #eee; }
 
-        /* Чат */
-        #chat-box { height: 130px; overflow-y: auto; background: #f1f8ff; padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; }
+        /* ЧАТ: добавлена плавная прокрутка */
+        #chat-box { height: 130px; overflow-y: auto; background: #f1f8ff; padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
         .chat-msg { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); }
 
-        /* Инвентарь */
         #inventory { text-align: left; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
         .inv-item { display: flex; align-items: center; margin-bottom: 6px; background: #f8f9fa; padding: 6px; border-radius: 10px; }
         .inv-icon { width: 40px; height: 40px; margin-right: 12px; object-fit: cover; border-radius: 6px; }
@@ -123,11 +118,11 @@
         { name: "Кракен", rarity: "legend", chance: 1, minW: 500.0, maxW: 2500.0, image: "https://avatars.mds.yandex.net/i?id=dd13a6e98bdf167c5b86c86dc71fea0da385b381-5888173-images-thumbs&n=13" }
     ];
 
-    // Глобальные элементы управления
     const trophyImg = document.getElementById("trophy-img");
     const trophyPlaceholder = document.getElementById("trophy-placeholder");
     const fishBtn = document.getElementById("fishBtn");
     const resultDiv = document.getElementById("result");
+    const chatBox = document.getElementById("chat-box");
 
     let nickname = localStorage.getItem("nick") || "";
     document.getElementById("nickname").value = nickname;
@@ -171,21 +166,23 @@
         try {
             await db.from("messages").insert([{ nickname, text: txt }]);
             input.value = "";
-            loadData();
+            await loadData();
         } catch(e) {}
     }
 
     async function loadData() {
         try {
-            // Загрузка ТОПа
             const { data: top } = await db.from("players").select("*").order("fish", { ascending: false }).limit(10);
             if (top) document.getElementById("leaderboard").innerHTML = top.map((p, i) => `<b>${i+1}.</b> ${p.nickname} — ⚖️ <b>${p.fish} кг</b>`).join("<br>");
             
-            // Загрузка Чата
-            const { data: msgs } = await db.from("messages").select("*").order("id", { ascending: false }).limit(15);
-            if (msgs) document.getElementById("chat-box").innerHTML = msgs.map(m => `<div class="chat-msg"><b>${m.nickname}:</b> ${m.text}</div>`).join("");
+            // ЧАТ: Порядок ascending: true (новые внизу)
+            const { data: msgs } = await db.from("messages").select("*").order("id", { ascending: true }).limit(20);
+            if (msgs) {
+                chatBox.innerHTML = msgs.map(m => `<div class="chat-msg"><b>${m.nickname}:</b> ${m.text}</div>`).join("");
+                // Скролл вниз
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
 
-            // Загрузка Лога уловов
             const { data: history } = await db.from("catches").select("*").order("id", { ascending: false }).limit(5);
             if (history) {
                 document.getElementById("catch-log").innerHTML = history.map(h => {
@@ -224,7 +221,6 @@
                 trophyPlaceholder.style.display = "none";
                 resultDiv.innerHTML = `Поймал: <span style="color:var(--primary)">${f.name}</span> (${w.toFixed(1)} кг)!`;
                 
-                // В базу данных
                 await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
             } else {
                 resultDiv.innerText = "Рыба сорвалась... Попробуй еще раз!";
@@ -247,10 +243,8 @@
         }, 1000);
     }
 
-    // Первичная загрузка
     updateUI(); 
     loadData();
-    // Авто-обновление чата и топа каждые 7 секунд
     setInterval(loadData, 7000);
 </script>
 </body>
