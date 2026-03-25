@@ -9,7 +9,6 @@
     <style>
         :root { 
             --primary: #0077ff; 
-            --bg: #e0f2ff; 
             --panel: rgba(255, 255, 255, 0.9); 
             --text: #2c3e50; 
             --rare: #0077ff; 
@@ -17,42 +16,46 @@
             --legend: #e67e22; 
         }
 
-        /* ОСНОВНОЙ ФОН С ГРАДИЕНТОМ И ПАТТЕРНОМ */
         body { 
             font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); 
-            background-image: linear-gradient(180deg, #6ec6ff 0%, #e0f2ff 100%); 
             margin: 0; 
             padding: 20px; 
             color: var(--text); 
             min-height: 100vh; 
             text-align: center; 
             position: relative;
+            background-color: #e0f2ff;
+            background-image: linear-gradient(180deg, #6ec6ff 0%, #e0f2ff 100%);
+            background-attachment: fixed;
         }
 
-        /* СЛОЙ С ПАТТЕРНОМ ВОЛН */
+        /* CSS ПАТТЕРН ВОЛН */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('image_c38c09.jpg'); /* Твой паттерн */
-            background-repeat: repeat;
-            background-size: 150px;
-            opacity: 0.1; /* Легкая прозрачность для стиля */
             z-index: -1;
             pointer-events: none;
+            background-image: 
+                radial-gradient(circle at 100% 150%, #ffffff 24%, rgba(255,255,255,0) 25%),
+                radial-gradient(circle at 0% 150%, #ffffff 24%, rgba(255,255,255,0) 25%),
+                radial-gradient(circle at 50% 100%, rgba(255,255,255,0) 10%, #ffffff 11%, #ffffff 23%, rgba(255,255,255,0) 24%),
+                radial-gradient(circle at 100% 50%, rgba(255,255,255,0) 10%, #ffffff 11%, #ffffff 23%, rgba(255,255,255,0) 24%),
+                radial-gradient(circle at 0% 50%, rgba(255,255,255,0) 10%, #ffffff 11%, #ffffff 23%, rgba(255,255,255,0) 24%);
+            background-size: 60px 35px;
+            background-position: 0 0, 0 0, 30px 17px, 30px 17px, 30px 17px;
+            opacity: 0.15; 
         }
 
         .container { max-width: 500px; margin: 0 auto; position: relative; z-index: 1; }
-        
         .panel { 
             background: var(--panel); 
             padding: 20px; 
             margin-bottom: 20px; 
             border-radius: 20px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1); 
             border: 1px solid rgba(255,255,255,0.4); 
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(4px);
         }
         
         #rod-animation { font-size: 50px; height: 60px; display: none; margin: 10px 0; }
@@ -65,22 +68,18 @@
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         input, button { padding: 12px; font-size: 16px; border-radius: 10px; border: 2px solid #ddd; outline: none; }
-        button { background: var(--primary); color: white; font-weight: bold; cursor: pointer; border: none; box-shadow: 0 4px 0 #0056b3; transition: 0.1s; }
+        button { background: var(--primary); color: white; font-weight: bold; cursor: pointer; border: none; box-shadow: 0 4px 0 #0056b3; }
         button:active { transform: translateY(2px); box-shadow: 0 2px 0 #0056b3; }
         button:disabled { background: #adb5bd; box-shadow: 0 4px 0 #6c757d; cursor: not-allowed; }
 
-        /* ЛОГ И ЦВЕТА РАРИТЕТНОСТИ */
         .log-box { background: rgba(255, 251, 230, 0.8); padding: 10px; border-radius: 10px; border: 1px solid #ffe58f; margin-bottom: 15px; font-size: 13px; text-align: left; }
         .log-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
         .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #eee; }
 
+        /* ЦВЕТА РАРИТЕТНОСТИ */
         .rare-txt { color: var(--rare); font-weight: bold; }
         .epic-txt { color: var(--epic); font-weight: bold; }
-        .legend-txt { 
-            color: var(--legend); 
-            font-weight: bold; 
-            text-shadow: 0 0 8px rgba(230, 126, 34, 0.3);
-        }
+        .legend-txt { color: var(--legend); font-weight: bold; text-shadow: 0 0 8px rgba(230, 126, 34, 0.3); }
 
         #chat-box { height: 130px; overflow-y: auto; background: rgba(241, 248, 255, 0.8); padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
         .chat-msg { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); }
@@ -111,7 +110,7 @@
     </div>
 
     <div class="panel">
-        <h3 style="margin-top:0;">📜 История уловов</h3>
+        <h3 style="margin-top:0;">📜 История уловов LIVE</h3>
         <div id="catch-log" class="log-box">Загрузка истории...</div>
         
         <h3 style="margin-bottom:10px;">💬 Чат</h3>
@@ -131,7 +130,7 @@
     </div>
 
     <div class="panel">
-        <h3 style="margin-top:0;">🏆 Топ 10</h3>
+        <h3 style="margin-top:0;">🏆 Топ 10 дизайнеров</h3>
         <div id="leaderboard" style="text-align:left; line-height: 1.8;">Загрузка...</div>
     </div>
 </div>
@@ -174,7 +173,6 @@
     function updateUI() {
         document.getElementById("stat-weight").innerText = stats.totalWeight.toFixed(1);
         document.getElementById("stat-count").innerText = stats.caught;
-        
         let invHtml = "<h4>🎒 Мой садок:</h4>";
         for (let name in inventory) {
             let f = fishes.find(x => x.name === name);
@@ -187,7 +185,7 @@
         nickname = document.getElementById("nickname").value.trim();
         if(!nickname) return alert("Введи ник!");
         localStorage.setItem("nick", nickname);
-        alert("Ник сохранен!");
+        alert("Дизайн-ник сохранен!");
         savePlayer();
     }
 
@@ -195,7 +193,6 @@
         if (!nickname) return;
         try {
             await db.from("players").upsert({ nickname: nickname, fish: Number(stats.totalWeight.toFixed(1)) }, { onConflict: 'nickname' });
-            loadData();
         } catch(e) {}
     }
 
@@ -207,7 +204,7 @@
         try {
             await db.from("messages").insert([{ nickname, text: txt }]);
             input.value = "";
-            await loadData();
+            loadData();
         } catch(e) {}
     }
 
@@ -246,7 +243,7 @@
         trophyImg.style.display = "none";
         trophyPlaceholder.style.display = "block";
         document.getElementById("main-game").classList.add("fishing-active");
-        resultDiv.innerText = "Закидываем наживку...";
+        resultDiv.innerText = "Дизайн-концепт заброшен...";
 
         setTimeout(async () => {
             document.getElementById("main-game").classList.remove("fishing-active");
@@ -254,11 +251,7 @@
                 let totalChance = fishes.reduce((s, f) => s + f.chance, 0);
                 let roll = Math.random() * totalChance;
                 let sum = 0, f = fishes[0];
-                
-                for (let x of fishes) {
-                    sum += x.chance;
-                    if (roll < sum) { f = x; break; }
-                }
+                for (let x of fishes) { sum += x.chance; if (roll < sum) { f = x; break; } }
                 
                 let w = Math.random() * (f.maxW - f.minW) + f.minW;
                 stats.caught++; 
@@ -272,18 +265,18 @@
                 trophyPlaceholder.style.display = "none";
                 
                 let rarityClass = (f.rarity === 'rare') ? 'rare-txt' : (f.rarity === 'epic' ? 'epic-txt' : (f.rarity === 'legend' ? 'legend-txt' : ''));
-                resultDiv.innerHTML = `Поймал: <span class="${rarityClass}">${f.name}</span> (${w.toFixed(1)} кг)!`;
+                resultDiv.innerHTML = `Дизайн-успех: <span class="${rarityClass}">${f.name}</span> (${w.toFixed(1)} кг)!`;
                 
                 await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
             } else {
-                resultDiv.innerText = "Рыба сорвалась... Попробуй в другом месте!";
+                resultDiv.innerText = "Ревью не пройдено... Попробуй в другом месте!";
             }
             
             localStorage.setItem("stats", JSON.stringify(stats));
             localStorage.setItem("inventory", JSON.stringify(inventory));
             updateUI(); 
             savePlayer(); 
-            startCooldown(10000); 
+            startCooldown(600000); // 10 МИНУТ
         }, 2000);
     };
 
@@ -291,8 +284,17 @@
         let end = Date.now() + ms;
         let t = setInterval(() => {
             let l = end - Date.now();
-            if (l <= 0) { clearInterval(t); fishBtn.disabled = false; document.getElementById("timer").innerText = ""; return; }
-            document.getElementById("timer").innerText = `Ждем: ${Math.ceil(l/1000)} сек.`;
+            if (l <= 0) { 
+                clearInterval(t); 
+                fishBtn.disabled = false; 
+                document.getElementById("timer").innerText = ""; 
+                return; 
+            }
+            let minutes = Math.floor(l / 60000);
+            let seconds = Math.ceil((l % 60000) / 1000);
+            // ФОРМАТИРОВАНИЕ СЕКУНД (чтобы было 09 вместо 9)
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            document.getElementById("timer").innerText = `Заброс через: ${minutes}:${seconds}`;
         }, 1000);
     }
 
