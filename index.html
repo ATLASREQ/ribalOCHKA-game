@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>🎣 Настоящая Дизайнерская Рыбалка</title>
+    <title>🎣 Дизайнерская Рыбалка</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { 
@@ -61,9 +61,9 @@
         .fishing-active #rod-animation { display: block; animation: cast 1s infinite ease-in-out; }
         @keyframes cast { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
-        #trophy-display { min-height: 250px; display: flex; align-items: center; justify-content: center; margin: 10px 0; border: 2px dashed #ddd; border-radius: 15px; background: rgba(249, 249, 249, 0.5); overflow: hidden; padding: 10px; }
+        #trophy-display { min-height: 250px; display: flex; align-items: center; justify-content: center; margin: 10px 0; border: 2px dashed #b3d7ff; border-radius: 15px; background: rgba(240, 248, 255, 0.6); overflow: hidden; padding: 10px; }
         #trophy-img { width: 100%; height: 100%; max-height: 230px; display: none; animation: popIn 0.5s ease-out; border-radius: 10px; object-fit: contain; }
-        #trophy-placeholder { font-size: 60px; color: #ccc; }
+        #trophy-placeholder { font-size: 80px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1)); }
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         input, button { padding: 12px; font-size: 16px; border-radius: 10px; border: 2px solid #ddd; outline: none; }
@@ -82,9 +82,23 @@
         #chat-box { height: 130px; overflow-y: auto; background: rgba(241, 248, 255, 0.8); padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
         .chat-msg { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); }
 
-        #inventory { text-align: left; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
-        .inv-item { display: flex; align-items: center; margin-bottom: 6px; background: rgba(248, 249, 250, 0.7); padding: 6px; border-radius: 10px; }
-        .inv-icon { width: 40px; height: 40px; margin-right: 12px; object-fit: cover; border-radius: 6px; }
+        /* СЕТКА ДЛЯ ИНВЕНТАРЯ */
+        #inventory-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+            margin-top: 10px;
+        }
+        .inv-item { 
+            display: flex; 
+            align-items: center; 
+            background: rgba(255, 255, 255, 0.7); 
+            padding: 8px; 
+            border-radius: 12px; 
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .inv-icon { width: 35px; height: 35px; margin-right: 8px; object-fit: cover; border-radius: 6px; }
+        .inv-info { text-align: left; font-size: 12px; line-height: 1.2; }
     </style>
 </head>
 <body>
@@ -99,7 +113,7 @@
     <div class="panel" id="main-game">
         <div id="rod-animation">🎣</div>
         <div id="trophy-display">
-            <span id="trophy-placeholder">?</span>
+            <span id="trophy-placeholder">🪝</span>
             <img id="trophy-img" src="" alt="Улов">
         </div>
         <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Наживка готова!</div>
@@ -120,11 +134,14 @@
     </div>
 
     <div class="panel">
-        <div style="display:flex; justify-content:space-around; font-weight:bold; font-size: 18px;">
+        <div style="display:flex; justify-content:space-around; font-weight:bold; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
             <span>⚖️ <span id="stat-weight">0</span> кг</span>
             <span>🐟 <span id="stat-count">0</span> шт</span>
         </div>
-        <div id="inventory"></div>
+        <div id="inventory">
+            <h4 style="margin: 10px 0 5px 0;">🎒 Мой садок:</h4>
+            <div id="inventory-grid"></div>
+        </div>
     </div>
 
     <div class="panel">
@@ -161,6 +178,7 @@
     const fishBtn = document.getElementById("fishBtn");
     const resultDiv = document.getElementById("result");
     const chatBox = document.getElementById("chat-box");
+    const invGrid = document.getElementById("inventory-grid");
 
     let nickname = localStorage.getItem("nick") || "";
     document.getElementById("nickname").value = nickname;
@@ -171,12 +189,23 @@
     function updateUI() {
         document.getElementById("stat-weight").innerText = stats.totalWeight.toFixed(1);
         document.getElementById("stat-count").innerText = stats.caught;
-        let invHtml = "<h4>🎒 Мой садок:</h4>";
+        
+        let invHtml = "";
         for (let name in inventory) {
             let f = fishes.find(x => x.name === name);
-            if(f) invHtml += `<div class="inv-item"><img src="${f.image}" class="inv-icon"> <div><b>${name}</b><br><small>${inventory[name].count} шт. — ${inventory[name].weight.toFixed(1)} кг</small></div></div>`;
+            if(f) {
+                invHtml += `
+                <div class="inv-item">
+                    <img src="${f.image}" class="inv-icon"> 
+                    <div class="inv-info">
+                        <b>${name}</b><br>
+                        ${inventory[name].count} шт. / ${inventory[name].weight.toFixed(1)} кг
+                    </div>
+                </div>`;
+            }
         }
-        document.getElementById("inventory").innerHTML = Object.keys(inventory).length ? invHtml : "";
+        invGrid.innerHTML = invHtml;
+        document.getElementById("inventory").style.display = invHtml ? "block" : "none";
     }
 
     function saveNick() {
@@ -278,14 +307,12 @@
         }, 2500);
     };
 
-    // ФУНКЦИЯ ЗАПУСКА КУЛДАУНА
     function startCooldown(ms) {
         let endTime = Date.now() + ms;
         localStorage.setItem("cooldownEnd", endTime);
         runTimer(endTime);
     }
 
-    // ЛОГИКА ТАЙМЕРА
     function runTimer(endTime) {
         fishBtn.disabled = true;
         if (window.fishTimer) clearInterval(window.fishTimer);
@@ -308,7 +335,6 @@
         }, 1000);
     }
 
-    // ПРОВЕРКА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
     const savedCooldown = localStorage.getItem("cooldownEnd");
     if (savedCooldown) {
         const remaining = parseInt(savedCooldown) - Date.now();
