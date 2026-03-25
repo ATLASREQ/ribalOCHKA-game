@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>🎣 Онлайн Рыбалка</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background: #6ec6ff; text-align: center; padding: 20px; }
+        .panel { background: white; padding: 20px; margin: 10px auto; max-width: 400px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button { font-size: 18px; padding: 10px 20px; cursor: pointer; border-radius: 5px; border: none; background: #0077ff; color: white; }
+        button:disabled { background: #ccc; }
+        .common { color: black; } .rare { color: blue; font-weight: bold; } .legend { color: orange; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>🎣 Онлайн Рыбалка</h1>
+
+    <div class="panel">
+        <input type="text" id="nickname" placeholder="Ваш ник...">
+        <button onclick="saveNick()">Сохранить ник</button>
+    </div>
+
+    <div class="panel">
+        <div id="timer"></div>
+        <button id="fishBtn">Закинуть удочку</button>
+        <div id="result"></div>
+    </div>
+
+    <div class="panel">
+        <h3>📦 Инвентарь</h3>
+        <div id="inventory">пусто</div>
+    </div>
+
+    <div class="panel">
+        <h3>🌍 Топ игроков</h3>
+        <div id="leaderboard">Загрузка...</div>
+    </div>
+
+<script>
+    const supabaseUrl = "https://fzsmyifqmsbdkrhchrgs.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6c215aWZxbXNiZGtyaGNocmdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NjQ0MjAsImV4cCI6MjA5MDA0MDQyMH0.uWwvjhQL_yEaaCCUnYIYSVHj-bNdbEJ-yPACrbeJGP4";
+    
+    // ПЕРЕИМЕНОВАЛИ В db ЧТОБЫ НЕ БЫЛО ОШИБКИ ИЗ КОНСОЛИ
+    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    const fishes = [
+        { name: "Карась", rarity: "common", chance: 30 },
+        { name: "Окунь", rarity: "common", chance: 25 },
+        { name: "Сом", rarity: "rare", chance: 10 },
+        { name: "Золотая рыба", rarity: "rare", chance: 5 },
+        { name: "Кракен", rarity: "legend", chance: 1 }
+    ];
+
+    let nickname = localStorage.getItem("nick") || "";
+    document.getElementById("nickname").value = nickname;
+    let stats = JSON.parse(localStorage.getItem("stats")) || { caught: 0 };
+    let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+
+    function saveNick() {
+        nickname = document.getElementById("nickname").value.trim();
+        if(!nickname) return alert("Введите ник!");
+        localStorage.setItem("nick", nickname);
+        alert("Ник сохранен!");
+        savePlayer();
+    }
+
+    async function savePlayer() {
+        if (!nickname) return;
+        try {
+            await db.from("players").upsert({ nickname: nickname, fish: stats.caught }, { onConflict: 'nickname' });
+        } catch (e) { console.log("Ошибка базы"); }
+    }
+
+    async function loadLeaderboard() {
+        try {
+            const { data } = await db.from("players").select("*").order("fish", { ascending: false }).limit(10);
+            if (data) {
+                document.getElementById("leaderboard").innerHTML = data.map((p, i) => `${i + 1}. ${p.nickname} — ${p.fish}`).join("<br>");
+            }
+        } catch (e) { console.log("Ошибка топа"); }
+    }
+
+    function updateInvUI() {
+        let html = "";
+        for (let f in inventory) html += `${f} x${inventory[f]}<br>`;
+        document.getElementById("inventory").innerHTML = html || "пусто";
+    }
+
+    document.getElementById("fishBtn").onclick = async function() {
+        if (!nickname) return alert("Сначала сохрани ник!");
+        
+        if (Math.random() < 0.7) {
+            let roll = Math.random() * 71; // Сумма шансов в этом списке ~71
+            let sum = 0;
+            let fish = fishes[0];
+            for (let f of fishes) {
+                sum += f.chance;
+                if (roll < sum) { fish = f; break; }
+            }
+            inventory[fish.name] = (inventory[fish.name] || 0) + 1;
+            stats.caught++;
+            document.getElementById("result").innerHTML = `Вы поймали: <span class="${fish.rarity}">${fish.name}</span>`;
+        } else {
+            document.getElementById("result").innerText = "Ничего не поймали";
+        }
+
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        localStorage.setItem("stats", JSON.stringify(stats));
+        updateInvUI();
+        await savePlayer();
+        loadLeaderboard();
+    };
+
+    updateInvUI();
+    loadLeaderboard();
+</script>
+</body>
+</html>
