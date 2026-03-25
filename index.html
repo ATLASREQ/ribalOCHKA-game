@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>🎣 Рыбалка для дизайнеров</title>
+    <title>🎣 Настоящая Дизайнерская Рыбалка</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { 
@@ -29,7 +29,6 @@
             background-attachment: fixed;
         }
 
-        /* CSS ПАТТЕРН ВОЛН */
         body::before {
             content: "";
             position: fixed;
@@ -76,7 +75,6 @@
         .log-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
         .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #eee; }
 
-        /* ЦВЕТА РАРИТЕТНОСТИ */
         .rare-txt { color: var(--rare); font-weight: bold; }
         .epic-txt { color: var(--epic); font-weight: bold; }
         .legend-txt { color: var(--legend); font-weight: bold; text-shadow: 0 0 8px rgba(230, 126, 34, 0.3); }
@@ -91,10 +89,10 @@
 </head>
 <body>
 <div class="container">
-    <h1>🎣 Рыбалка для дизайнеров</h1>
+    <h1>🎣 Мужская Рыбалка</h1>
     
     <div class="panel">
-        <input type="text" id="nickname" style="width:65%" placeholder="Твой ник...">
+        <input type="text" id="nickname" style="width:65%" placeholder="Твой позывной...">
         <button onclick="saveNick()">💾</button>
     </div>
 
@@ -102,21 +100,21 @@
         <div id="rod-animation">🎣</div>
         <div id="trophy-display">
             <span id="trophy-placeholder">?</span>
-            <img id="trophy-img" src="" alt="Трофей">
+            <img id="trophy-img" src="" alt="Улов">
         </div>
-        <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Закидывай удочку!</div>
-        <button id="fishBtn">ЗАБРОСИТЬ</button>
+        <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Наживка готова!</div>
+        <button id="fishBtn">ЗАБРОСИТЬ УДОЧКУ</button>
         <div id="timer" style="color: #e74c3c; margin-top:10px; font-weight:bold; min-height: 20px;"></div>
     </div>
 
     <div class="panel">
-        <h3 style="margin-top:0;">📜 История уловов LIVE</h3>
-        <div id="catch-log" class="log-box">Загрузка истории...</div>
+        <h3 style="margin-top:0;">📜 Кто что вытянул</h3>
+        <div id="catch-log" class="log-box">Загрузка...</div>
         
-        <h3 style="margin-bottom:10px;">💬 Чат</h3>
-        <div id="chat-box">Загрузка сообщений...</div>
+        <h3 style="margin-bottom:10px;">💬 Мужские разговоры</h3>
+        <div id="chat-box">Загрузка...</div>
         <div style="display:flex; gap:5px;">
-            <input type="text" id="chatInput" style="flex:1" placeholder="Напиши всем...">
+            <input type="text" id="chatInput" style="flex:1" placeholder="Че как клёв?">
             <button onclick="sendMsg()" style="padding: 10px 20px;">➡️</button>
         </div>
     </div>
@@ -183,9 +181,9 @@
 
     function saveNick() {
         nickname = document.getElementById("nickname").value.trim();
-        if(!nickname) return alert("Введи ник!");
+        if(!nickname) return alert("Представься сначала!");
         localStorage.setItem("nick", nickname);
-        alert("Дизайн-ник сохранен!");
+        alert("Позывной записан!");
         savePlayer();
     }
 
@@ -199,7 +197,7 @@
     async function sendMsg() {
         const input = document.getElementById("chatInput");
         const txt = input.value.trim();
-        if(!nickname) return alert("Сначала сохрани ник!");
+        if(!nickname) return alert("Сначала представься!");
         if(!txt) return;
         try {
             await db.from("messages").insert([{ nickname, text: txt }]);
@@ -237,13 +235,13 @@
     }
 
     fishBtn.onclick = async function() {
-        if (!nickname) return alert("Введи ник и нажми дискету!");
+        if (!nickname) return alert("Введи имя и нажми на дискету!");
         
         fishBtn.disabled = true;
         trophyImg.style.display = "none";
         trophyPlaceholder.style.display = "block";
         document.getElementById("main-game").classList.add("fishing-active");
-        resultDiv.innerText = "Дизайн-концепт заброшен...";
+        resultDiv.innerText = "Плеск воды... Ждём поклевку...";
 
         setTimeout(async () => {
             document.getElementById("main-game").classList.remove("fishing-active");
@@ -265,37 +263,60 @@
                 trophyPlaceholder.style.display = "none";
                 
                 let rarityClass = (f.rarity === 'rare') ? 'rare-txt' : (f.rarity === 'epic' ? 'epic-txt' : (f.rarity === 'legend' ? 'legend-txt' : ''));
-                resultDiv.innerHTML = `Дизайн-успех: <span class="${rarityClass}">${f.name}</span> (${w.toFixed(1)} кг)!`;
+                resultDiv.innerHTML = `ЕСТЬ! Попалась <span class="${rarityClass}">${f.name}</span> на ${w.toFixed(1)} кг!`;
                 
                 await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
             } else {
-                resultDiv.innerText = "Ревью не пройдено... Попробуй в другом месте!";
+                resultDiv.innerText = "Эх, сорвалась... Ушла рыба!";
             }
             
             localStorage.setItem("stats", JSON.stringify(stats));
             localStorage.setItem("inventory", JSON.stringify(inventory));
             updateUI(); 
             savePlayer(); 
-            startCooldown(600000); // 10 МИНУТ
-        }, 2000);
+            startCooldown(600000); // 10 минут
+        }, 2500);
     };
 
+    // ФУНКЦИЯ ЗАПУСКА КУЛДАУНА
     function startCooldown(ms) {
-        let end = Date.now() + ms;
-        let t = setInterval(() => {
-            let l = end - Date.now();
-            if (l <= 0) { 
-                clearInterval(t); 
-                fishBtn.disabled = false; 
-                document.getElementById("timer").innerText = ""; 
-                return; 
+        let endTime = Date.now() + ms;
+        localStorage.setItem("cooldownEnd", endTime);
+        runTimer(endTime);
+    }
+
+    // ЛОГИКА ТАЙМЕРА
+    function runTimer(endTime) {
+        fishBtn.disabled = true;
+        if (window.fishTimer) clearInterval(window.fishTimer);
+
+        window.fishTimer = setInterval(() => {
+            let remaining = endTime - Date.now();
+            
+            if (remaining <= 0) {
+                clearInterval(window.fishTimer);
+                fishBtn.disabled = false;
+                document.getElementById("timer").innerText = "";
+                localStorage.removeItem("cooldownEnd");
+                return;
             }
-            let minutes = Math.floor(l / 60000);
-            let seconds = Math.ceil((l % 60000) / 1000);
-            // ФОРМАТИРОВАНИЕ СЕКУНД (чтобы было 09 вместо 9)
+
+            let minutes = Math.floor(remaining / 60000);
+            let seconds = Math.ceil((remaining % 60000) / 1000);
             seconds = seconds < 10 ? '0' + seconds : seconds;
             document.getElementById("timer").innerText = `Заброс через: ${minutes}:${seconds}`;
         }, 1000);
+    }
+
+    // ПРОВЕРКА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+    const savedCooldown = localStorage.getItem("cooldownEnd");
+    if (savedCooldown) {
+        const remaining = parseInt(savedCooldown) - Date.now();
+        if (remaining > 0) {
+            runTimer(parseInt(savedCooldown));
+        } else {
+            localStorage.removeItem("cooldownEnd");
+        }
     }
 
     updateUI(); 
