@@ -2,118 +2,120 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>🎣 Онлайн Рыбалка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎣 Гранд Рыбалка</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #6ec6ff; text-align: center; padding: 20px; }
-        .panel { background: white; padding: 20px; margin: 10px auto; max-width: 400px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        button { font-size: 18px; padding: 10px 20px; cursor: pointer; border-radius: 5px; border: none; background: #0077ff; color: white; }
+        :root { --p: #0077ff; --bg: #e0f2ff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; color: #2c3e50; }
+        .panel { background: white; padding: 20px; margin-bottom: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); max-width: 500px; margin-left: auto; margin-right: auto; }
+        img { max-width: 140px; border-radius: 10px; display: none; margin: 10px auto; }
+        button { font-size: 18px; padding: 12px 25px; cursor: pointer; border-radius: 12px; border: none; background: var(--p); color: white; font-weight: bold; }
         button:disabled { background: #ccc; }
-        .common { color: black; } .rare { color: blue; font-weight: bold; } .legend { color: orange; font-weight: bold; }
+        .inv-item { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; padding: 5px 0; }
+        .inv-img { width: 30px; height: 30px; display: block; margin: 0; }
     </style>
 </head>
 <body>
 
-    <h1>🎣 Онлайн Рыбалка</h1>
+<div class="panel">
+    <input type="text" id="nickInput" placeholder="Ник...">
+    <button onclick="saveNick()">💾</button>
+</div>
 
-    <div class="panel">
-        <input type="text" id="nickname" placeholder="Ваш ник...">
-        <button onclick="saveNick()">Сохранить ник</button>
+<div class="panel">
+    <div id="display">
+        <span id="placeholder" style="font-size:50px">?</span>
+        <img id="fishImg" src="" alt="Рыба">
     </div>
+    <div id="result">Закидывай!</div>
+    <button id="btn" onclick="goFishing()">ЗАБРОСИТЬ</button>
+    <div id="timer"></div>
+</div>
 
-    <div class="panel">
-        <div id="timer"></div>
-        <button id="fishBtn">Закинуть удочку</button>
-        <div id="result"></div>
-    </div>
+<div class="panel">
+    <h3>🎒 Инвентарь (Вес: <span id="tw">0</span> кг)</h3>
+    <div id="inv">Пусто</div>
+</div>
 
-    <div class="panel">
-        <h3>📦 Инвентарь</h3>
-        <div id="inventory">пусто</div>
-    </div>
-
-    <div class="panel">
-        <h3>🌍 Топ игроков</h3>
-        <div id="leaderboard">Загрузка...</div>
-    </div>
+<div class="panel">
+    <h3>🏆 Топ</h3>
+    <div id="leaderboard">Загрузка...</div>
+</div>
 
 <script>
-    const supabaseUrl = "https://fzsmyifqmsbdkrhchrgs.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6c215aWZxbXNiZGtyaGNocmdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NjQ0MjAsImV4cCI6MjA5MDA0MDQyMH0.uWwvjhQL_yEaaCCUnYIYSVHj-bNdbEJ-yPACrbeJGP4";
-    
-    // ПЕРЕИМЕНОВАЛИ В db ЧТОБЫ НЕ БЫЛО ОШИБКИ ИЗ КОНСОЛИ
-    const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+    // Инициализация Supabase (один раз!)
+    const client = supabase.createClient("https://fzsmyifqmsbdkrhchrgs.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6c215aWZxbXNiZGtyaGNocmdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NjQ0MjAsImV4cCI6MjA5MDA0MDQyMH0.uWwvjhQL_yEaaCCUnYIYSVHj-bNdbEJ-yPACrbeJGP4");
 
-    const fishes = [
-        { name: "Карась", rarity: "common", chance: 30 },
-        { name: "Окунь", rarity: "common", chance: 25 },
-        { name: "Сом", rarity: "rare", chance: 10 },
-        { name: "Золотая рыба", rarity: "rare", chance: 5 },
-        { name: "Кракен", rarity: "legend", chance: 1 }
+    const fishData = [
+        { n: "Карась", w: [0.2, 1.5], c: 30, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Carassius_carassius_Prague_Vltava_2.jpg/200px-Carassius_carassius_Prague_Vltava_2.jpg" },
+        { n: "Окунь", w: [0.3, 2.5], c: 25, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Perch_Gervais.jpg/200px-Perch_Gervais.jpg" },
+        { n: "Сом", w: [5, 50], c: 10, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Silurus_glanis_02.jpg/200px-Silurus_glanis_02.jpg" },
+        { n: "Кракен", w: [500, 2500], c: 1, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Giant_squid_v1.jpg/200px-Giant_squid_v1.jpg" }
     ];
 
-    let nickname = localStorage.getItem("nick") || "";
-    document.getElementById("nickname").value = nickname;
-    let stats = JSON.parse(localStorage.getItem("stats")) || { caught: 0 };
-    let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+    let myStats = JSON.parse(localStorage.getItem("f_stats")) || { tw: 0, items: {} };
+    let myNick = localStorage.getItem("f_nick") || "";
+    document.getElementById("nickInput").value = myNick;
 
     function saveNick() {
-        nickname = document.getElementById("nickname").value.trim();
-        if(!nickname) return alert("Введите ник!");
-        localStorage.setItem("nick", nickname);
-        alert("Ник сохранен!");
-        savePlayer();
+        myNick = document.getElementById("nickInput").value.trim();
+        if(myNick) { localStorage.setItem("f_nick", myNick); alert("Ник сохранен!"); updateDB(); }
     }
 
-    async function savePlayer() {
-        if (!nickname) return;
-        try {
-            await db.from("players").upsert({ nickname: nickname, fish: stats.caught }, { onConflict: 'nickname' });
-        } catch (e) { console.log("Ошибка базы"); }
+    async function updateDB() {
+        if(!myNick) return;
+        await client.from("players").upsert({ nickname: myNick, fish: Number(myStats.tw.toFixed(1)) }, { onConflict: 'nickname' });
+        loadTop();
     }
 
-    async function loadLeaderboard() {
-        try {
-            const { data } = await db.from("players").select("*").order("fish", { ascending: false }).limit(10);
-            if (data) {
-                document.getElementById("leaderboard").innerHTML = data.map((p, i) => `${i + 1}. ${p.nickname} — ${p.fish}`).join("<br>");
-            }
-        } catch (e) { console.log("Ошибка топа"); }
+    async function loadTop() {
+        const { data } = await client.from("players").select("*").order("fish", { ascending: false }).limit(10);
+        if(data) document.getElementById("leaderboard").innerHTML = data.map(p => `${p.nickname}: ${p.fish} кг`).join("<br>");
     }
 
-    function updateInvUI() {
+    function updateUI() {
+        document.getElementById("tw").innerText = myStats.tw.toFixed(1);
         let html = "";
-        for (let f in inventory) html += `${f} x${inventory[f]}<br>`;
-        document.getElementById("inventory").innerHTML = html || "пусто";
+        for(let n in myStats.items) {
+            let f = fishData.find(x => x.n === n);
+            html += `<div class="inv-item"><img src="${f.img}" class="inv-img"> <b>${n}</b>: ${myStats.items[n].c} шт. <span>${myStats.items[n].w.toFixed(1)} кг</span></div>`;
+        }
+        document.getElementById("inv").innerHTML = html || "Пусто";
     }
 
-    document.getElementById("fishBtn").onclick = async function() {
-        if (!nickname) return alert("Сначала сохрани ник!");
-        
-        if (Math.random() < 0.7) {
-            let roll = Math.random() * 71; // Сумма шансов в этом списке ~71
-            let sum = 0;
-            let fish = fishes[0];
-            for (let f of fishes) {
-                sum += f.chance;
-                if (roll < sum) { fish = f; break; }
+    function goFishing() {
+        if(!myNick) return alert("Введи ник!");
+        const btn = document.getElementById("btn");
+        btn.disabled = true;
+        document.getElementById("fishImg").style.display = "none";
+        document.getElementById("placeholder").style.display = "block";
+        document.getElementById("result").innerText = "Ловим...";
+
+        setTimeout(() => {
+            if(Math.random() < 0.7) {
+                let f = fishData[Math.floor(Math.random() * fishData.length)];
+                let weight = Math.random() * (f.w[1] - f.w[0]) + f.w[0];
+                
+                if(!myStats.items[f.n]) myStats.items[f.n] = { c: 0, w: 0 };
+                myStats.items[f.n].c++;
+                myStats.items[f.n].w += weight;
+                myStats.tw += weight;
+
+                document.getElementById("fishImg").src = f.img;
+                document.getElementById("fishImg").style.display = "block";
+                document.getElementById("placeholder").style.display = "none";
+                document.getElementById("result").innerText = `Поймал: ${f.n} (${weight.toFixed(1)} кг)`;
+            } else {
+                document.getElementById("result").innerText = "Пусто...";
             }
-            inventory[fish.name] = (inventory[fish.name] || 0) + 1;
-            stats.caught++;
-            document.getElementById("result").innerHTML = `Вы поймали: <span class="${fish.rarity}">${fish.name}</span>`;
-        } else {
-            document.getElementById("result").innerText = "Ничего не поймали";
-        }
+            localStorage.setItem("f_stats", JSON.stringify(myStats));
+            updateUI(); updateDB();
+            setTimeout(() => { btn.disabled = false; }, 3000);
+        }, 2000);
+    }
 
-        localStorage.setItem("inventory", JSON.stringify(inventory));
-        localStorage.setItem("stats", JSON.stringify(stats));
-        updateInvUI();
-        await savePlayer();
-        loadLeaderboard();
-    };
-
-    updateInvUI();
-    loadLeaderboard();
+    updateUI(); loadTop();
 </script>
 </body>
 </html>
