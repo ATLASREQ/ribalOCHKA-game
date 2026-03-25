@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>🎣 Дизайнерская Рыбалка</title>
+    <title>🎣 Дизайнерская Рыбалка (Sync)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { 
@@ -19,44 +19,18 @@
 
         body { 
             font-family: 'Segoe UI', sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            color: var(--text); 
-            min-height: 100vh; 
-            text-align: center; 
-            position: relative;
-            background-color: #e0f2ff;
-            background-image: linear-gradient(180deg, #6ec6ff 0%, #46af8c 100%);
-            background-attachment: fixed;
+            margin: 0; padding: 20px; color: var(--text); min-height: 100vh; text-align: center; position: relative;
+            background: linear-gradient(180deg, #6ec6ff 0%, #46af8c 100%) fixed;
         }
 
         body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-            background-image: 
-                radial-gradient(circle at 100% 150%, #ffffff 24%, rgba(255,255,255,0) 25%),
-                radial-gradient(circle at 0% 150%, #ffffff 24%, rgba(255,255,255,0) 25%),
-                radial-gradient(circle at 50% 100%, rgba(255,255,255,0) 10%, #ffffff 11%, #ffffff 23%, rgba(255,255,255,0) 24%),
-                radial-gradient(circle at 100% 50%, rgba(255,255,255,0) 10%, #ffffff 11%, #ffffff 23%, rgba(255,255,255,0) 24%),
-                radial-gradient(circle at 0% 50%, rgba(255,255,255,0) 10%, #ffffff 11%, #ffffff 23%, rgba(255,255,255,0) 24%);
-            background-size: 60px 35px;
-            background-position: 0 0, 0 0, 30px 17px, 30px 17px, 30px 17px;
-            opacity: 0.15; 
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+            background-image: radial-gradient(circle at 100% 150%, #ffffff 24%, rgba(255,255,255,0) 25%), radial-gradient(circle at 0% 150%, #ffffff 24%, rgba(255,255,255,0) 25%), radial-gradient(circle at 50% 100%, rgba(255,255,255,0) 10%, #ffffff 11%, #ffffff 23%, rgba(255,255,255,0) 24%);
+            background-size: 60px 35px; opacity: 0.15; 
         }
 
         .container { max-width: 500px; margin: 0 auto; position: relative; z-index: 1; }
-        .panel { 
-            background: var(--panel); 
-            padding: 20px; 
-            margin-bottom: 20px; 
-            border-radius: 20px; 
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1); 
-            border: 1px solid rgba(255,255,255,0.4); 
-            backdrop-filter: blur(4px);
-        }
+        .panel { background: var(--panel); padding: 20px; margin-bottom: 20px; border-radius: 20px; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1); border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(4px); }
         
         #rod-animation { font-size: 50px; height: 60px; display: none; margin: 10px 0; }
         .fishing-active #rod-animation { display: block; animation: cast 1s infinite ease-in-out; }
@@ -73,19 +47,17 @@
         button:disabled { background: #adb5bd; box-shadow: 0 4px 0 #6c757d; cursor: not-allowed; }
 
         .btn-reset { background: var(--danger); box-shadow: 0 4px 0 #c0392b; margin-top: 15px; font-size: 14px; padding: 8px 15px; }
-        .btn-reset:active { box-shadow: 0 2px 0 #c0392b; }
 
         .log-box { background: rgba(255, 251, 230, 0.8); padding: 10px; border-radius: 10px; border: 1px solid #ffe58f; margin-bottom: 15px; font-size: 13px; text-align: left; }
         .log-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 5px; }
-        .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; background: #eee; }
+        .log-img { width: 35px; height: 35px; border-radius: 6px; object-fit: cover; }
 
         .rare-txt { color: var(--rare); font-weight: bold; }
         .epic-txt { color: var(--epic); font-weight: bold; }
-        .legend-txt { color: var(--legend); font-weight: bold; text-shadow: 0 0 8px rgba(230, 126, 34, 0.3); }
+        .legend-txt { color: var(--legend); font-weight: bold; }
 
-        #chat-box { height: 130px; overflow-y: auto; background: rgba(241, 248, 255, 0.8); padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; scroll-behavior: smooth; }
-        .chat-msg { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-
+        #chat-box { height: 130px; overflow-y: auto; background: rgba(241, 248, 255, 0.8); padding: 10px; border-radius: 10px; font-size: 14px; border: 1px solid #d0e7ff; text-align: left; margin-bottom: 10px; }
+        
         #inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .inv-item { display: flex; align-items: center; background: rgba(255, 255, 255, 0.7); padding: 8px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); }
         .inv-icon { width: 35px; height: 35px; margin-right: 8px; object-fit: cover; border-radius: 6px; }
@@ -130,7 +102,7 @@
             <span>🐟 <span id="stat-count">0</span> шт</span>
         </div>
         <div id="inventory">
-            <h4 style="margin: 10px 0 5px 0;">🎒 Мой садок:</h4>
+            <h4 style="margin: 10px 0 5px 0;">🎒 Мой садок (Sync):</h4>
             <div id="inventory-grid"></div>
             <button class="btn-reset" onclick="clearMyData()">🗑️ Очистить садок</button>
         </div>
@@ -165,76 +137,70 @@
         { name: "Осетр", rarity: "legend", chance: 0.1, minW: 20.0, maxW: 150.0, image: "https://i.pinimg.com/736x/a5/5a/18/a55a18d9af024706fc06549cd15d1713.jpg" }
     ];
 
-    const trophyImg = document.getElementById("trophy-img");
-    const trophyPlaceholder = document.getElementById("trophy-placeholder");
-    const fishBtn = document.getElementById("fishBtn");
-    const resultDiv = document.getElementById("result");
-    const chatBox = document.getElementById("chat-box");
-    const invGrid = document.getElementById("inventory-grid");
-
     let nickname = localStorage.getItem("nick") || "";
+    let inventory = {}; 
+    let stats = { caught: 0, totalWeight: 0 };
+
     document.getElementById("nickname").value = nickname;
 
-    let stats = JSON.parse(localStorage.getItem("stats")) || { caught: 0, totalWeight: 0 };
-    let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+    // ЗАГРУЗКА ИНВЕНТАРЯ ИЗ ОБЛАКА
+    async function syncInventory() {
+        if (!nickname) return;
+        try {
+            const { data } = await db.from("catches").select("fish_name, weight").eq("nickname", nickname);
+            inventory = {};
+            stats = { caught: 0, totalWeight: 0 };
+            
+            if (data) {
+                data.forEach(c => {
+                    if (!inventory[c.fish_name]) inventory[c.fish_name] = { count: 0, weight: 0 };
+                    inventory[c.fish_name].count++;
+                    inventory[c.fish_name].weight += c.weight;
+                    stats.caught++;
+                    stats.totalWeight += c.weight;
+                });
+            }
+            updateUI();
+        } catch(e) {}
+    }
 
     function updateUI() {
         document.getElementById("stat-weight").innerText = stats.totalWeight.toFixed(1);
         document.getElementById("stat-count").innerText = stats.caught;
-        
         let invHtml = "";
         for (let name in inventory) {
             let f = fishes.find(x => x.name === name);
             if(f) {
-                invHtml += `
-                <div class="inv-item">
-                    <img src="${f.image}" class="inv-icon"> 
-                    <div class="inv-info">
-                        <b>${name}</b><br>
-                        ${inventory[name].count} шт. / ${inventory[name].weight.toFixed(1)} кг
-                    </div>
-                </div>`;
+                invHtml += `<div class="inv-item"><img src="${f.image}" class="inv-icon"><div class="inv-info"><b>${name}</b><br>${inventory[name].count} шт. / ${inventory[name].weight.toFixed(1)} кг</div></div>`;
             }
         }
-        invGrid.innerHTML = invHtml;
-        document.getElementById("inventory").style.display = invHtml ? "block" : "none";
+        document.getElementById("inventory-grid").innerHTML = invHtml;
     }
 
-    // НОВАЯ ФУНКЦИЯ ОЧИСТКИ
-    function clearMyData() {
-        if(confirm("Выбросить всю рыбу из садка и обнулить свой вес?")) {
-            localStorage.removeItem("stats");
-            localStorage.removeItem("inventory");
-            alert("Садок пуст!");
+    async function saveNick() {
+        nickname = document.getElementById("nickname").value.trim();
+        if(!nickname) return alert("Представься!");
+        localStorage.setItem("nick", nickname);
+        await syncInventory(); // Сразу качаем его садок
+        alert("Данные синхронизированы!");
+    }
+
+    async function clearMyData() {
+        if(!nickname) return;
+        if(confirm("ВНИМАНИЕ: Это удалит весь ваш улов из базы данных! Продолжить?")) {
+            await db.from("catches").delete().eq("nickname", nickname);
+            await db.from("players").upsert({ nickname, fish: 0 });
             location.reload();
         }
-    }
-
-    function saveNick() {
-        nickname = document.getElementById("nickname").value.trim();
-        if(!nickname) return alert("Представься сначала!");
-        localStorage.setItem("nick", nickname);
-        alert("Позывной записан!");
-        savePlayer();
-    }
-
-    async function savePlayer() {
-        if (!nickname) return;
-        try {
-            await db.from("players").upsert({ nickname: nickname, fish: Number(stats.totalWeight.toFixed(1)) }, { onConflict: 'nickname' });
-        } catch(e) {}
     }
 
     async function sendMsg() {
         const input = document.getElementById("chatInput");
         const txt = input.value.trim();
-        if(!nickname) return alert("Сначала представься!");
-        if(!txt) return;
-        try {
-            await db.from("messages").insert([{ nickname, text: txt }]);
-            input.value = "";
-            loadData();
-        } catch(e) {}
+        if(!nickname || !txt) return;
+        await db.from("messages").insert([{ nickname, text: txt }]);
+        input.value = "";
+        loadData();
     }
 
     async function loadData() {
@@ -244,35 +210,29 @@
             
             const { data: msgs } = await db.from("messages").select("*").order("id", { ascending: true }).limit(20);
             if (msgs) {
-                chatBox.innerHTML = msgs.map(m => `<div class="chat-msg"><b>${m.nickname}:</b> ${m.text}</div>`).join("");
-                chatBox.scrollTop = chatBox.scrollHeight;
+                document.getElementById("chat-box").innerHTML = msgs.map(m => `<div class="chat-msg"><b>${m.nickname}:</b> ${m.text}</div>`).join("");
+                document.getElementById("chat-box").scrollTop = document.getElementById("chat-box").scrollHeight;
             }
 
             const { data: history } = await db.from("catches").select("*").order("id", { ascending: false }).limit(5);
             if (history) {
                 document.getElementById("catch-log").innerHTML = history.map(h => {
                     let f = fishes.find(x => x.name === h.fish_name);
-                    let img = f ? f.image : "";
-                    let rClass = "";
-                    if(f) {
-                        if(f.rarity === 'rare') rClass = "rare-txt";
-                        else if(f.rarity === 'epic') rClass = "epic-txt";
-                        else if(f.rarity === 'legend') rClass = "legend-txt";
-                    }
-                    return `<div class="log-item"><img src="${img}" class="log-img"> <span><b>${h.nickname}</b> вытянул <b class="${rClass}">${h.fish_name}</b> (${h.weight.toFixed(1)}кг)</span></div>`;
+                    let rClass = f ? (f.rarity === 'rare' ? 'rare-txt' : (f.rarity === 'epic' ? 'epic-txt' : (f.rarity === 'legend' ? 'legend-txt' : ''))) : '';
+                    return `<div class="log-item"><img src="${f?.image}" class="log-img"> <span><b>${h.nickname}</b> вытянул <b class="${rClass}">${h.fish_name}</b> (${h.weight.toFixed(1)}кг)</span></div>`;
                 }).join("");
             }
         } catch (e) {}
     }
 
-    fishBtn.onclick = async function() {
-        if (!nickname) return alert("Введи имя и нажми на дискету!");
-        
-        fishBtn.disabled = true;
-        trophyImg.style.display = "none";
-        trophyPlaceholder.style.display = "block";
+    document.getElementById("fishBtn").onclick = async function() {
+        if (!nickname) return alert("Сначала нажми на дискету 💾!");
+        const btn = this;
+        btn.disabled = true;
+        document.getElementById("trophy-img").style.display = "none";
+        document.getElementById("trophy-placeholder").style.display = "block";
         document.getElementById("main-game").classList.add("fishing-active");
-        resultDiv.innerText = "Плеск воды... Ждём поклевку...";
+        document.getElementById("result").innerText = "Забрасываем...";
 
         setTimeout(async () => {
             document.getElementById("main-game").classList.remove("fishing-active");
@@ -281,30 +241,21 @@
                 let roll = Math.random() * totalChance;
                 let sum = 0, f = fishes[0];
                 for (let x of fishes) { sum += x.chance; if (roll < sum) { f = x; break; } }
-                
                 let w = Math.random() * (f.maxW - f.minW) + f.minW;
-                stats.caught++; 
-                stats.totalWeight += w;
-                if(!inventory[f.name]) inventory[f.name] = { count: 0, weight: 0 };
-                inventory[f.name].count++;
-                inventory[f.name].weight += w;
 
-                trophyImg.src = f.image;
-                trophyImg.style.display = "block";
-                trophyPlaceholder.style.display = "none";
+                document.getElementById("trophy-img").src = f.image;
+                document.getElementById("trophy-img").style.display = "block";
+                document.getElementById("trophy-placeholder").style.display = "none";
+                document.getElementById("result").innerHTML = `ЕСТЬ! <b>${f.name}</b> (${w.toFixed(1)} кг)`;
                 
-                let rarityClass = (f.rarity === 'rare') ? 'rare-txt' : (f.rarity === 'epic' ? 'epic-txt' : (f.rarity === 'legend' ? 'legend-txt' : ''));
-                resultDiv.innerHTML = `ЕСТЬ! Попалась <span class="${rarityClass}">${f.name}</span> на ${w.toFixed(1)} кг!`;
-                
+                // СОХРАНЯЕМ В ОБЛАКО
                 await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
+                // ОБНОВЛЯЕМ ЛИДЕРБОРД
+                await syncInventory(); 
+                await db.from("players").upsert({ nickname, fish: Number(stats.totalWeight.toFixed(1)) }, { onConflict: 'nickname' });
             } else {
-                resultDiv.innerText = "Эх, сорвалась... Ушла рыба!";
+                document.getElementById("result").innerText = "Эх, сорвалась...";
             }
-            
-            localStorage.setItem("stats", JSON.stringify(stats));
-            localStorage.setItem("inventory", JSON.stringify(inventory));
-            updateUI(); 
-            savePlayer(); 
             startCooldown(600000); 
         }, 2500);
     };
@@ -316,33 +267,26 @@
     }
 
     function runTimer(endTime) {
-        fishBtn.disabled = true;
+        document.getElementById("fishBtn").disabled = true;
         if (window.fishTimer) clearInterval(window.fishTimer);
-
         window.fishTimer = setInterval(() => {
             let remaining = endTime - Date.now();
             if (remaining <= 0) {
                 clearInterval(window.fishTimer);
-                fishBtn.disabled = false;
+                document.getElementById("fishBtn").disabled = false;
                 document.getElementById("timer").innerText = "";
-                localStorage.removeItem("cooldownEnd");
                 return;
             }
-            let minutes = Math.floor(remaining / 60000);
-            let seconds = Math.ceil((remaining % 60000) / 1000);
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-            document.getElementById("timer").innerText = `Заброс через: ${minutes}:${seconds}`;
+            let m = Math.floor(remaining / 60000);
+            let s = Math.ceil((remaining % 60000) / 1000);
+            document.getElementById("timer").innerText = `Заброс через: ${m}:${s < 10 ? '0'+s : s}`;
         }, 1000);
     }
 
     const savedCooldown = localStorage.getItem("cooldownEnd");
-    if (savedCooldown) {
-        const remaining = parseInt(savedCooldown) - Date.now();
-        if (remaining > 0) runTimer(parseInt(savedCooldown));
-        else localStorage.removeItem("cooldownEnd");
-    }
+    if (savedCooldown && parseInt(savedCooldown) > Date.now()) runTimer(parseInt(savedCooldown));
 
-    updateUI(); 
+    syncInventory(); // Первичная загрузка садка
     loadData();
     setInterval(loadData, 7000);
 </script>
