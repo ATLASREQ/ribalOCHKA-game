@@ -62,6 +62,7 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6c215aWZxbXNiZGtyaGNocmdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NjQ0MjAsImV4cCI6MjA5MDA0MDQyMH0.uWwvjhQL_yEaaCCUnYIYSVHj-bNdbEJ-yPACrbeJGP4";
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    // Ссылки на картинки с Википедии через thumb для скорости
     const fishes = [
         { name: "Карась", rarity: "common", chance: 30, minW: 0.2, maxW: 1.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Carassius_carassius_Prague_Vltava_2.jpg/400px-Carassius_carassius_Prague_Vltava_2.jpg" },
         { name: "Окунь", rarity: "common", chance: 25, minW: 0.3, maxW: 2.5, image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Perch_Gervais.jpg/400px-Perch_Gervais.jpg" },
@@ -72,6 +73,12 @@
 
     let nickname = localStorage.getItem("nick") || "";
     document.getElementById("nickname").value = nickname;
+
+    // ОБЪЯВЛЯЕМ ПЕРЕМЕННЫЕ ДЛЯ КАРТИНОК
+    const trophyImg = document.getElementById("trophy-img");
+    const trophyPlaceholder = document.getElementById("trophy-placeholder");
+    const fishBtn = document.getElementById("fishBtn");
+
     let stats, inventory;
     try {
         stats = JSON.parse(localStorage.getItem("stats")) || { caught: 0, totalWeight: 0 };
@@ -115,13 +122,13 @@
         document.getElementById("stat-count").innerText = stats.caught;
     }
 
-    document.getElementById("fishBtn").onclick = async function() {
+    fishBtn.onclick = async function() {
         if (!nickname) return alert("Введи ник!");
-        const b = this;
+        
         trophyImg.style.display = "none";
         trophyPlaceholder.style.display = "block";
         document.getElementById("main-game").classList.add("fishing-active");
-        b.disabled = true;
+        fishBtn.disabled = true;
         document.getElementById("result").innerText = "Закидываем...";
 
         setTimeout(async () => {
@@ -130,9 +137,13 @@
                 let roll = Math.random() * 71, sum = 0, f = fishes[0];
                 for (let x of fishes) { sum += x.chance; if (roll < sum) { f = x; break; } }
                 let w = Math.random() * (f.maxW - f.minW) + f.minW;
+                
                 if(!inventory[f.name]) inventory[f.name] = { count: 0, weight: 0 };
-                inventory[f.name].count++; inventory[f.name].weight += w;
-                stats.caught++; stats.totalWeight += w;
+                inventory[f.name].count++; 
+                inventory[f.name].weight += w;
+                stats.caught++; 
+                stats.totalWeight += w;
+
                 trophyImg.src = f.image;
                 trophyImg.style.display = "block";
                 trophyPlaceholder.style.display = "none";
@@ -147,12 +158,11 @@
     };
 
     function startCooldown(ms) {
-        const b = document.getElementById("fishBtn");
-        b.disabled = true;
+        fishBtn.disabled = true;
         let end = Date.now() + ms;
         let t = setInterval(() => {
             let l = end - Date.now();
-            if (l <= 0) { clearInterval(t); b.disabled = false; document.getElementById("timer").innerText = ""; return; }
+            if (l <= 0) { clearInterval(t); fishBtn.disabled = false; document.getElementById("timer").innerText = ""; return; }
             document.getElementById("timer").innerText = `Ждем: ${Math.ceil(l/1000)} сек.`;
         }, 1000);
     }
