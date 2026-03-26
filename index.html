@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>🎣 Дизайнерская Рыбалка: v4.6 (Dev Build)</title>
+    <title>🎣 Дизайнерская Рыбалка: v4.7 (Fix Build)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { 
@@ -143,7 +143,7 @@
             <img id="trophy-placeholder" src="https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/hook-illustration.png">
             <img id="trophy-img" src="">
         </div>
-        <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Снасти готовы!</div>
+        <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Проверка снастей...</div>
         
         <div class="xp-container">
             <div class="xp-label">
@@ -154,8 +154,8 @@
         </div>
 
         <div class="cast-group">
-            <button id="fishBtn" style="flex:1">ЗАБРОСИТЬ УДОЧКУ</button>
-            <button id="netBtn">🕸️</button>
+            <button id="fishBtn" style="flex:1" disabled>ЗАБРОСИТЬ УДОЧКУ</button>
+            <button id="netBtn" disabled>🕸️</button>
         </div>
 
         <div class="bait-group">
@@ -221,7 +221,7 @@
         { name: "Линь", rarity: "rare", chance: 5, minW: 0.8, maxW: 4.0, xp: 45, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/lin.png", type: "peaceful" },
         { name: "Щука", rarity: "rare", chance: 5, minW: 1.5, maxW: 15.0, xp: 50, image: "https://avatars.mds.yandex.net/i?id=fa768e0c65f5fa7d49eb004a911fd13d_l-4011302-images-thumbs&n=13", type: "predator" },
         { name: "Судак", rarity: "epic", chance: 3, minW: 2.0, maxW: 12.0, xp: 100, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Sudak.png", type: "predator" },
-	{ name: "Карп", rarity: "epic", chance: 3, minW: 2.0, maxW: 12.0, xp: 100, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Karp.png", type: "predator" },
+        { name: "Карп", rarity: "epic", chance: 3, minW: 2.0, maxW: 12.0, xp: 100, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Karp.png", type: "predator" },
         { name: "Налим", rarity: "epic", chance: 3, minW: 1.5, maxW: 10.0, xp: 110, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Nalim.png", type: "predator" },
         { name: "Сом", rarity: "epic", chance: 2, minW: 10.0, maxW: 80.0, xp: 150, image: "https://avatars.mds.yandex.net/i?id=f25c27a2e5c2428546dbeb9d5642cc59c897acb0-5233251-images-thumbs&n=13", type: "predator" },
         { name: "Осетр", rarity: "legend", chance: 0.5, minW: 20.0, maxW: 150.0, xp: 600, image: "https://i.pinimg.com/736x/a5/5a/18/a55a18d9af024706fc06549cd15d1713.jpg", type: "peaceful" },
@@ -285,7 +285,8 @@
             stats.caught++; stats.totalWeight += c.weight;
             if (c.weight > bestF.weight) bestF = { weight: c.weight, name: c.fish_name, img: fishes.find(f=>f.name===c.fish_name)?.image };
         });
-        updateUI(); checkTimers();
+        updateUI(); 
+        checkTimers();
     }
 
     function updateUI() {
@@ -312,15 +313,28 @@
 
     async function checkTimers() {
         if (!nickname) return;
+        
+        document.getElementById("fishBtn").disabled = true;
+        document.getElementById("netBtn").disabled = true;
+
         const { data } = await db.from("players").select("*").eq("nickname", nickname).single();
         if (data) {
-            // Кулдаун 5 секунд для тестов (вместо 600000)
-            const castEnd = new Date(data.last_cast).getTime() + 600000; 
-            if (castEnd > Date.now()) runTimer(castEnd);
+            // Удочка: 10 минут (600000 мс)
+            const castEnd = data.last_cast ? new Date(data.last_cast).getTime() + 600000 : 0; 
+            if (castEnd > Date.now()) {
+                runTimer(castEnd);
+            } else {
+                document.getElementById("fishBtn").disabled = false;
+                document.getElementById("result").innerText = "Снасти готовы!";
+            }
             
-            // Сеть 5 секунд для тестов (вместо 86400000)
-            const netEnd = new Date(data.last_net_cast).getTime() + 86400000;
+            // Сеть: 24 часа (86400000 мс)
+            const netEnd = data.last_net_cast ? new Date(data.last_net_cast).getTime() + 86400000 : 0;
             document.getElementById("netBtn").disabled = (netEnd > Date.now());
+        } else {
+            document.getElementById("fishBtn").disabled = false;
+            document.getElementById("netBtn").disabled = false;
+            document.getElementById("result").innerText = "Добро пожаловать!";
         }
     }
 
@@ -334,18 +348,20 @@
                 clearInterval(timerInterval); 
                 btn.disabled = false; 
                 document.getElementById("timer").innerText = ""; 
+                document.getElementById("result").innerText = "Клёв пошёл!";
                 return; 
             }
             let mins = Math.floor(left / 60000);
-            let secs = Math.floor((left % 60000) / 1000);
-            document.getElementById("timer").innerText = `Удочка через: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }, 1000);
+            let secs = Math.ceil((left % 60000) / 1000);
+            document.getElementById("timer").innerText = `Удочка через: ${mins}м ${secs}с`;
+        }, 500);
     }
 
     async function saveNick() {
         nickname = document.getElementById("nickname").value.trim();
         if(!nickname) return; localStorage.setItem("nick", nickname);
-        document.getElementById("auth-panel").classList.add("hidden"); syncInventory();
+        document.getElementById("auth-panel").classList.add("hidden"); 
+        syncInventory();
     }
 
     async function loadData() {
@@ -365,6 +381,17 @@
 
     document.getElementById("fishBtn").onclick = async function() {
         if (!nickname) return;
+        
+        const { data: check } = await db.from("players").select("last_cast").eq("nickname", nickname).single();
+        if (check && check.last_cast) {
+            const wait = new Date(check.last_cast).getTime() + 600000;
+            if (wait > Date.now()) {
+                alert("Рано! Рыба ещё не вернулась.");
+                checkTimers();
+                return;
+            }
+        }
+
         const display = document.getElementById("trophy-display");
         const placeholder = document.getElementById("trophy-placeholder");
         const trophyImg = document.getElementById("trophy-img");
@@ -376,7 +403,7 @@
         display.classList.add("fishing-active");
 
         await db.from("players").upsert({ nickname, last_cast: new Date().toISOString() }, { onConflict: 'nickname' });
-        runTimer(Date.now() + 5000);
+        runTimer(Date.now() + 600000);
 
         setTimeout(async () => {
             display.classList.remove("fishing-active");
@@ -411,6 +438,17 @@
 
     document.getElementById("netBtn").onclick = async function() {
         if (!nickname) return;
+        
+        const { data: check } = await db.from("players").select("last_net_cast").eq("nickname", nickname).single();
+        if (check && check.last_net_cast) {
+            const wait = new Date(check.last_net_cast).getTime() + 86400000;
+            if (wait > Date.now()) {
+                alert("Сеть ещё чинят!");
+                checkTimers();
+                return;
+            }
+        }
+
         this.disabled = true; 
         document.getElementById("result").innerText = "Тянем сеть... 🕸️";
         document.getElementById("trophy-display").classList.add("fishing-active");
@@ -455,8 +493,14 @@
     }
 
     window.onload = function() {
-        if (nickname) { document.getElementById("auth-panel").classList.add("hidden"); syncInventory(); }
-        loadData(); setInterval(loadData, 10000);
+        if (nickname) { 
+            document.getElementById("auth-panel").classList.add("hidden"); 
+            syncInventory(); 
+        } else {
+            document.getElementById("result").innerText = "Представься, рыбак!";
+        }
+        loadData(); 
+        setInterval(loadData, 10000);
     };
 </script>
 </body>
