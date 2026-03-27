@@ -28,20 +28,21 @@
         
         .hidden { display: none !important; }
 
-        #trophy-display { 
-            min-height: 250px; display: flex; align-items: center; justify-content: center; 
-            margin: 10px 0; border: 2px dashed #b3d7ff; border-radius: 20px; 
-            background: rgba(240, 248, 255, 0.6); 
+        #trophy-display {
+            min-height: 250px; display: flex; align-items: center; justify-content: center;
+            margin: 10px 0; border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.7));
             overflow: hidden; padding: 0; transition: all 0.4s ease;
             position: relative;
+            box-shadow: 0 4px 15px rgba(0, 119, 255, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
         }
         
         .glow-rare { box-shadow: 0 0 25px var(--rare); border: 2px solid var(--rare) !important; }
         .glow-epic { box-shadow: 0 0 30px var(--epic); border: 2px solid var(--epic) !important; }
         .glow-legend { box-shadow: 0 0 40px var(--legend); border: 2px solid var(--legend) !important; }
 
-        #trophy-placeholder { 
-            width: 130px; height: 130px; opacity: 0.8; object-fit: contain;
+        #trophy-placeholder {
+            width: 200px; height: 200px; opacity: 0.8; object-fit: contain;
             animation: bobbing 2s ease-in-out infinite;
         }
 
@@ -127,18 +128,95 @@
         .rare-txt { color: var(--rare) !important; font-weight: bold !important; }
         .epic-txt { color: var(--epic) !important; font-weight: bold !important; }
         .legend-txt { color: var(--legend) !important; font-weight: bold !important; }
+
+        /* Main title styles */
+        .game-title {
+            font-size: 32px; font-weight: 800; margin-bottom: 20px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(125, 211, 252, 0.4);
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        /* Daily tasks styles */
+        .daily-panel {
+            background: linear-gradient(135deg, #52a32e 0%, #3d7a22 100%);
+            border-radius: 12px; padding: 10px 12px;
+            margin: 10px 0; color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+        .daily-panel h3 { margin: 0 0 8px 0; font-size: 16px; display: flex; align-items: center; gap: 6px; }
+        .daily-tasks-list { display: flex; flex-direction: column; gap: 6px; }
+        .daily-task {
+            background: rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 8px 10px;
+            display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px;
+        }
+        .daily-task.completed { background: rgba(34, 197, 94, 0.4); border: 1px solid #4ade80; }
+        .daily-task.completed .task-check { opacity: 1; }
+        .task-icon { font-size: 22px; min-width: 28px; text-align: center; }
+        .task-info { text-align: left; }
+        .task-desc { font-size: 14px; font-weight: 500; line-height: 1.3; }
+        .task-progress { font-size: 12px; opacity: 0.9; margin-top: 2px; }
+        .task-bar-bg { width: 100%; height: 5px; background: rgba(0,0,0,0.2); border-radius: 3px; margin-top: 5px; overflow: hidden; }
+        .task-bar-fill { height: 100%; background: linear-gradient(90deg, #86efac, #22c55e); transition: width 0.3s ease; }
+        .task-check {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            font-size: 18px; opacity: 0; transition: opacity 0.3s;
+        }
+        .task-reward {
+            background: rgba(255, 255, 255, 0.25); padding: 4px 8px; border-radius: 6px;
+            font-size: 12px; font-weight: bold; white-space: nowrap;
+        }
+        .task-right { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .claim-btn {
+            background: #4ade80; box-shadow: 0 2px 0 #22c55e; font-size: 12px; padding: 5px 10px;
+            border-radius: 6px; border: none; cursor: pointer; color: #064e3b; font-weight: bold;
+        }
+        .daily-reset { font-size: 11px; opacity: 0.8; margin-top: 8px; text-align: center; }
+
+        /* Global record banner */
+        .global-record-banner {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 15px; padding: 12px 15px;
+            margin: 15px 0; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+        }
+        .global-record-banner .trophy-icon { 
+            font-size: 32px; 
+            animation: trophy-glow 2s ease-in-out infinite;
+        }
+        @keyframes trophy-glow {
+            0%, 100% { filter: drop-shadow(0 0 5px #fbbf24) drop-shadow(0 0 10px #f59e0b); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 15px #fbbf24) drop-shadow(0 0 25px #f59e0b); transform: scale(1.05); }
+        }
+        .global-record-banner .record-info { flex: 1; text-align: left; }
+        .global-record-banner .record-label { font-size: 10px; color: #92400e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .global-record-banner .record-fish { font-size: 16px; font-weight: 800; color: #78350f; }
+        .global-record-banner .record-weight { font-size: 13px; color: #92400e; }
+        .global-record-banner .record-player { 
+            font-size: 14px; color: #dc2626; font-weight: 800; 
+            display: block; margin-bottom: 4px;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .global-record-banner .record-img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🎣 Дизайнерская Рыбалка</h1>
-    
+    <h1 class="game-title">🎣 Дизайнерская Рыбалка</h1>
+
     <div class="panel" id="auth-panel">
         <input type="text" id="nickname" style="width:65%" placeholder="Твой позывной...">
         <button onclick="saveNick()">💾</button>
     </div>
 
     <div class="panel" id="main-game">
+        <div id="daily-tasks-panel" class="daily-panel hidden">
+            <h3>📋 Ежедневные задания</h3>
+            <div id="daily-tasks-list" class="daily-tasks-list"></div>
+        </div>
+
         <div id="trophy-display">
             <img id="trophy-placeholder" src="https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/hook-illustration.png">
             <img id="trophy-img" src="">
@@ -171,6 +249,18 @@
     <div class="panel">
         <h3 style="margin-top:0;">📜 История улова</h3>
         <div id="catch-log" class="log-box">Загрузка...</div>
+        
+        <div id="global-record-banner" class="global-record-banner" style="display: none;">
+            <div class="trophy-icon">🏆</div>
+            <div class="record-info">
+                <div class="record-player" id="global-record-player">...</div>
+                <div class="record-label">Главный трофей</div>
+                <div class="record-fish" id="global-record-fish">...</div>
+                <div class="record-weight">Вес: <b id="global-record-weight">0</b> кг</div>
+            </div>
+            <img id="global-record-img" class="record-img" src="" alt="Рекордная рыба">
+        </div>
+        
         <h3 style="margin-bottom:10px;">💬 Разговоры о важном</h3>
         <div id="chat-box"></div>
         <div style="display:flex; gap:5px;">
@@ -231,16 +321,190 @@
 
     let currentBait = 'worm';
     let nickname = localStorage.getItem("nick") || "";
-    let inventory = {}; 
-    let stats = { caught: 0, totalWeight: 0, xp: 0, level: 1 }; 
+    let inventory = {};
+    let stats = { caught: 0, totalWeight: 0, xp: 0, level: 1 };
     let bestF = { weight: 0 };
     let timerInterval = null;
+    let dailyTasks = [];
+    const DAILY_TASKS_POOL = [
+        { type: 'catch_fish', fish: 'Уклейка', count: 15, xp: 50, icon: '🐟' },
+        { type: 'catch_fish', fish: 'Плотва', count: 10, xp: 60, icon: '🐠' },
+        { type: 'catch_fish', fish: 'Карась', count: 8, xp: 70, icon: '🎣' },
+        { type: 'catch_fish', fish: 'Окунь', count: 5, xp: 80, icon: '🦈' },
+        { type: 'catch_fish', fish: 'Красноперка', count: 7, xp: 65, icon: '🐟' },
+        { type: 'catch_fish', fish: 'Густера', count: 6, xp: 70, icon: '🐠' },
+        { type: 'catch_fish', fish: 'Лещ', count: 3, xp: 100, icon: '🏆' },
+        { type: 'catch_fish', fish: 'Щука', count: 2, xp: 120, icon: '🦈' },
+        { type: 'catch_fish', fish: 'Линь', count: 3, xp: 110, icon: '🎯' },
+        { type: 'catch_fish', fish: 'Карп', count: 2, xp: 130, icon: '👑' },
+        { type: 'catch_fish', fish: 'Судак', count: 1, xp: 150, icon: '⭐' },
+        { type: 'catch_fish', fish: 'Налим', count: 1, xp: 160, icon: '🌟' },
+        { type: 'catch_any', count: 20, xp: 80, icon: '🎒' },
+        { type: 'catch_any', count: 35, xp: 140, icon: '🏅' }
+    ];
 
     function setBait(type, el) {
         currentBait = type;
         document.querySelectorAll('.bait-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
     }
+
+    // === DAILY TASKS SYSTEM ===
+    function getTodayDate() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function getSecondsUntilMidnight() {
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        return Math.floor((tomorrow - now) / 1000);
+    }
+
+    function updateDailyResetTimer() {
+        const seconds = getSecondsUntilMidnight();
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        document.getElementById("daily-reset-timer").innerText = 
+            `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function generateDailyTasks() {
+        const shuffled = [...DAILY_TASKS_POOL].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 2);
+    }
+
+    async function loadDailyTasks() {
+        if (!nickname) return;
+        const today = getTodayDate();
+        
+        // Проверяем, есть ли задания на сегодня
+        const { data: existing } = await db.from("daily_tasks")
+            .select("*")
+            .eq("nickname", nickname)
+            .eq("date_assigned", today);
+
+        if (existing && existing.length > 0) {
+            dailyTasks = existing;
+        } else {
+            // Удаляем старые задания (на другие даты)
+            await db.from("daily_tasks")
+                .delete()
+                .eq("nickname", nickname)
+                .neq("date_assigned", today);
+            
+            // Создаём новые задания на сегодня
+            const newTasks = generateDailyTasks();
+            dailyTasks = [];
+            for (const task of newTasks) {
+                const { data } = await db.from("daily_tasks").insert([{
+                    nickname,
+                    task_type: task.type,
+                    target_fish: task.fish || null,
+                    target_count: task.count,
+                    reward_xp: task.xp,
+                    date_assigned: today
+                }]).select().single();
+                if (data) dailyTasks.push(data);
+            }
+        }
+        renderDailyTasks();
+    }
+
+    function renderDailyTasks() {
+        const panel = document.getElementById("daily-tasks-panel");
+        const list = document.getElementById("daily-tasks-list");
+        
+        if (dailyTasks.length === 0) {
+            panel.classList.add("hidden");
+            return;
+        }
+        
+        panel.classList.remove("hidden");
+        list.innerHTML = dailyTasks.map(task => {
+            const progress = Math.min(100, (task.current_count / task.target_count) * 100);
+            const completed = task.current_count >= task.target_count && !task.claimed;
+            
+            return `
+            <div class="daily-task ${task.current_count >= task.target_count ? 'completed' : ''}">
+                <div class="task-icon">${task.target_fish ? getFishIcon(task.target_fish) : '🎣'}</div>
+                <div class="task-info">
+                    <div class="task-desc">Поймать ${task.target_count} ${task.target_fish || 'рыб'}</div>
+                    <div class="task-progress">${task.current_count} / ${task.target_count}</div>
+                    <div class="task-bar-bg">
+                        <div class="task-bar-fill" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+                <div class="task-right">
+                    <div class="task-reward">+${task.reward_xp} XP</div>
+                    ${completed ? `<button class="claim-btn" onclick="claimDailyTask('${task.id}')">✓</button>` : ''}
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function getFishIcon(fishName) {
+        const fish = fishes.find(f => f.name === fishName);
+        if (!fish) return '🐟';
+        if (fish.rarity === 'legend') return '👑';
+        if (fish.rarity === 'epic') return '⭐';
+        if (fish.rarity === 'rare') return '🏆';
+        if (fish.type === 'predator') return '🦈';
+        return '🐟';
+    }
+
+    async function updateDailyTaskProgress(fishName, weight) {
+        if (!nickname || dailyTasks.length === 0) return;
+        
+        let tasksUpdated = false;
+        for (const task of dailyTasks) {
+            if (task.completed || task.claimed) continue;
+            
+            let shouldUpdate = false;
+            if (task.task_type === 'catch_fish' && task.target_fish === fishName) {
+                shouldUpdate = true;
+            } else if (task.task_type === 'catch_any') {
+                shouldUpdate = true;
+            }
+            
+            if (shouldUpdate) {
+                const newCount = (task.current_count || 0) + 1;
+                const { data } = await db.from("daily_tasks")
+                    .update({ current_count: newCount })
+                    .eq("id", task.id)
+                    .select()
+                    .single();
+                if (data) {
+                    Object.assign(task, data);
+                    tasksUpdated = true;
+                }
+            }
+        }
+        
+        if (tasksUpdated) renderDailyTasks();
+    }
+
+    async function claimDailyTask(taskId) {
+        const task = dailyTasks.find(t => t.id === taskId);
+        if (!task || task.current_count < task.target_count || task.claimed) return;
+        
+        await addXP(task.reward_xp);
+        await db.from("daily_tasks")
+            .update({ completed: true, claimed: true })
+            .eq("id", taskId);
+        
+        task.completed = true;
+        task.claimed = true;
+        
+        renderDailyTasks();
+        updateUI();
+        
+        document.getElementById("result").innerHTML = `🎉 Задание выполнено! +${task.reward_xp} XP`;
+    }
+    // === END DAILY TASKS SYSTEM ===
 
     function getNickColor(name) {
         let hash = 0; for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -275,18 +539,19 @@
         if (!nickname) return;
         const { data: catches } = await db.from("catches").select("*").eq("nickname", nickname);
         const { data: player } = await db.from("players").select("*").eq("nickname", nickname).single();
-        inventory = {}; 
+        inventory = {};
         stats = { caught: 0, totalWeight: 0, xp: player?.xp || 0, level: player?.level || 1 };
         bestF = { weight: 0 };
-        
+
         if (catches) catches.forEach(c => {
             if (!inventory[c.fish_name]) inventory[c.fish_name] = { count: 0, weight: 0 };
             inventory[c.fish_name].count++; inventory[c.fish_name].weight += c.weight;
             stats.caught++; stats.totalWeight += c.weight;
             if (c.weight > bestF.weight) bestF = { weight: c.weight, name: c.fish_name, img: fishes.find(f=>f.name===c.fish_name)?.image };
         });
-        updateUI(); 
+        updateUI();
         checkTimers();
+        loadDailyTasks();
     }
 
     function updateUI() {
@@ -370,12 +635,39 @@
             if (top) document.getElementById("leaderboard").innerHTML = top.map((p, i) => `<b>${i+1}.</b> ${p.nickname}: ⚖️ <b>${p.fish} кг</b> (Lvl ${p.level || 1})`).join("<br>");
             const { data: msgs } = await db.from("messages").select("*").order("id", { ascending: false }).limit(10);
             if (msgs) document.getElementById("chat-box").innerHTML = [...msgs].reverse().map(m => `<div class="chat-line"><b style="color:${getNickColor(m.nickname)}">${m.nickname}</b>: ${m.text}</div>`).join("");
+            // Прокрутка чата вниз
+            const chatBox = document.getElementById("chat-box");
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            // Загрузка глобального рекорда
+            await loadGlobalRecord();
+            
             const { data: hist } = await db.from("catches").select("*").order("id", { ascending: false }).limit(5);
             if (hist) document.getElementById("catch-log").innerHTML = hist.map(h => {
                 const fishData = fishes.find(x => x.name === h.fish_name);
                 const rClass = getRarityClass(fishData?.rarity);
                 return `<div class="log-item"><img src="${fishData?.image}" class="log-img"> <span><b style="color:${getNickColor(h.nickname)}">${h.nickname}</b>: <span class="${rClass}">${h.fish_name}</span> (${h.weight.toFixed(1)}кг)</span></div>`;
             }).join("");
+        } catch (e) {}
+    }
+
+    async function loadGlobalRecord() {
+        try {
+            // Получаем самый большой улов среди всех
+            const { data: record } = await db.from("catches")
+                .select("*")
+                .order("weight", { ascending: false })
+                .limit(1)
+                .single();
+            
+            if (record) {
+                const fishData = fishes.find(f => f.name === record.fish_name);
+                document.getElementById("global-record-fish").innerText = record.fish_name;
+                document.getElementById("global-record-weight").innerText = record.weight.toFixed(1);
+                document.getElementById("global-record-player").innerText = record.nickname;
+                document.getElementById("global-record-img").src = fishData?.image || "";
+                document.getElementById("global-record-banner").style.display = "flex";
+            }
         } catch (e) {}
     }
 
@@ -428,7 +720,8 @@
             
             await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
             await addXP(f.xp);
-            
+            await updateDailyTaskProgress(f.name, w);
+
             const newTotal = Number((stats.totalWeight + w).toFixed(1));
             await db.from("players").upsert({ nickname, xp: stats.xp, level: stats.level, fish: newTotal }, { onConflict: 'nickname' });
             
@@ -493,13 +786,13 @@
     }
 
     window.onload = function() {
-        if (nickname) { 
-            document.getElementById("auth-panel").classList.add("hidden"); 
-            syncInventory(); 
+        if (nickname) {
+            document.getElementById("auth-panel").classList.add("hidden");
+            syncInventory();
         } else {
             document.getElementById("result").innerText = "Представься, рыбак!";
         }
-        loadData(); 
+        loadData();
         setInterval(loadData, 10000);
     };
 </script>
