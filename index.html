@@ -31,43 +31,73 @@
         #trophy-display {
             min-height: 250px; display: flex; align-items: center; justify-content: center;
             margin: 10px 0; border-radius: 20px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.7));
+            background: transparent;
             overflow: hidden; padding: 0; transition: all 0.4s ease;
             position: relative;
             box-shadow: 0 4px 15px rgba(0, 119, 255, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
         }
+        #trophy-display.has-bg {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.7));
+        }
+        #trophy-display #trophy-img {
+            width: 100%; height: 100%; max-height: 250px; object-fit: cover;
+            position: absolute; top: 0; left: 0;
+            z-index: 10;
+        }
+        #trophy-display #trophy-img:not([src=""]) {
+            display: block;
+        }
+        #trophy-display #trophy-img[src=""] {
+            display: none;
+        }
+        #trophy-display #trophy-placeholder.fishing-placeholder {
+            width: 100%; height: 250px;
+            padding: 0; margin: 0;
+            background: linear-gradient(180deg, #87CEEB 0%, #5DBCD8 50%, #4A9FB5 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
         
-        .glow-rare { box-shadow: 0 0 25px var(--rare); border: 2px solid var(--rare) !important; }
-        .glow-epic { box-shadow: 0 0 30px var(--epic); border: 2px solid var(--epic) !important; }
-        .glow-legend { box-shadow: 0 0 40px var(--legend); border: 2px solid var(--legend) !important; }
-
-        #trophy-placeholder {
-            width: 200px; height: 200px; opacity: 0.8; object-fit: contain;
-            animation: bobbing 2s ease-in-out infinite;
+        .glow-rare { 
+            box-shadow: 0 0 25px var(--rare), 0 0 50px var(--rare), inset 0 0 20px rgba(0, 119, 255, 0.3); 
+            border: 2px solid var(--rare) !important; 
+            animation: glow-pulse-rare 2s ease-in-out infinite;
         }
-
-        @keyframes bobbing {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
+        @keyframes glow-pulse-rare {
+            0%, 100% { box-shadow: 0 0 25px var(--rare), 0 0 50px var(--rare), inset 0 0 20px rgba(0, 119, 255, 0.3); }
+            50% { box-shadow: 0 0 35px var(--rare), 0 0 70px var(--rare), inset 0 0 30px rgba(0, 119, 255, 0.5); }
         }
-
-        @keyframes struggle {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        
+        .glow-epic { 
+            box-shadow: 0 0 30px var(--epic), 0 0 60px var(--epic), inset 0 0 25px rgba(142, 68, 173, 0.3); 
+            border: 2px solid var(--epic) !important; 
+            animation: glow-pulse-epic 1.8s ease-in-out infinite;
         }
-
-        .fishing-active #trophy-placeholder {
-            animation: struggle 0.2s linear infinite !important;
-            filter: drop-shadow(0 0 10px #0077ff);
+        @keyframes glow-pulse-epic {
+            0%, 100% { box-shadow: 0 0 30px var(--epic), 0 0 60px var(--epic), inset 0 0 25px rgba(142, 68, 173, 0.3); }
+            50% { box-shadow: 0 0 45px var(--epic), 0 0 90px var(--epic), inset 0 0 40px rgba(142, 68, 173, 0.5); }
+        }
+        
+        .glow-legend { 
+            box-shadow: 0 0 40px var(--legend), 0 0 80px var(--legend), inset 0 0 30px rgba(230, 126, 34, 0.3); 
+            border: 2px solid var(--legend) !important; 
+            animation: glow-pulse-legend 1.5s ease-in-out infinite;
+        }
+        @keyframes glow-pulse-legend {
+            0%, 100% { box-shadow: 0 0 40px var(--legend), 0 0 80px var(--legend), inset 0 0 30px rgba(230, 126, 34, 0.3); }
+            50% { box-shadow: 0 0 60px var(--legend), 0 0 120px var(--legend), inset 0 0 50px rgba(230, 126, 34, 0.5); }
+        }
+        
+        .glow-special { 
+            box-shadow: 0 0 50px #e74c3c, 0 0 100px #e74c3c, inset 0 0 40px rgba(231, 76, 60, 0.4); 
+            border: 3px solid #e74c3c !important; 
+            animation: glow-pulse-special 1.2s ease-in-out infinite;
+        }
+        @keyframes glow-pulse-special {
+            0%, 100% { box-shadow: 0 0 50px #e74c3c, 0 0 100px #e74c3c, inset 0 0 40px rgba(231, 76, 60, 0.4); }
+            50% { box-shadow: 0 0 80px #e74c3c, 0 0 150px #e74c3c, inset 0 0 60px rgba(231, 76, 60, 0.7); }
         }
 
         #trophy-img { 
@@ -106,7 +136,19 @@
         button:active { transform: translateY(2px); box-shadow: 0 2px 0 #0056b3; }
         button:disabled { background: #adb5bd !important; box-shadow: 0 4px 0 #6c757d !important; cursor: not-allowed; opacity: 0.7; }
 
-        #netBtn { width: 60px; background: var(--net-red); box-shadow: 0 4px 0 #c0392b; font-size: 24px; padding: 0; }
+        #netBtn { 
+            width: 60px; 
+            background: var(--net-red); 
+            box-shadow: 0 4px 0 #c0392b; 
+            font-size: 24px; 
+            padding: 0; 
+        }
+        #netBtn:disabled { 
+            background: #e74c3c !important; 
+            box-shadow: 0 4px 0 #c0392b !important; 
+            opacity: 0.5; 
+            text-shadow: 0 0 3px rgba(255,255,255,0.8);
+        }
 
         #best-catch-box { 
             background: linear-gradient(135deg, #fff9db 0%, #fff3bf 100%);
@@ -128,12 +170,13 @@
         .rare-txt { color: var(--rare) !important; font-weight: bold !important; }
         .epic-txt { color: var(--epic) !important; font-weight: bold !important; }
         .legend-txt { color: var(--legend) !important; font-weight: bold !important; }
+        .special-txt { color: #e74c3c !important; font-weight: bold !important; }
 
         /* Main title styles */
         .game-title {
             font-size: 32px; font-weight: 800; margin-bottom: 20px;
             color: #ffffff;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(125, 211, 252, 0.4);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             letter-spacing: 1px;
             display: inline-block;
         }
@@ -182,7 +225,7 @@
             box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
         }
         .global-record-banner .trophy-icon { 
-            font-size: 32px; 
+            font-size: 32px;
             animation: trophy-glow 2s ease-in-out infinite;
         }
         @keyframes trophy-glow {
@@ -194,15 +237,161 @@
         .global-record-banner .record-fish { font-size: 16px; font-weight: 800; color: #78350f; }
         .global-record-banner .record-weight { font-size: 13px; color: #92400e; }
         .global-record-banner .record-player { 
-            font-size: 14px; color: #dc2626; font-weight: 800; 
+            font-size: 14px; color: #dc2626; font-weight: 800;
             display: block; margin-bottom: 4px;
             background: linear-gradient(135deg, #dc2626, #ef4444);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .global-record-banner .record-img { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+
+        /* Weather widget styles */
+        .weather-widget {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 10px 15px; margin-bottom: 15px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 15px; border: 1px solid #90caf9;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+        }
+        .weather-icon { font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .weather-info { text-align: left; }
+        .weather-name { font-size: 14px; font-weight: 700; color: #1565c0; }
+        .weather-bonus { font-size: 11px; color: #42a5f5; font-weight: 500; }
+        .weather-rain { background: linear-gradient(135deg, #cfd8dc 0%, #b0bec5 100%); border-color: #90a4ae; }
+        .weather-rain .weather-name { color: #455a64; }
+        .weather-rain .weather-bonus { color: #78909c; }
+        .weather-storm { background: linear-gradient(135deg, #455a64 0%, #37474f 100%); border-color: #263238; }
+        .weather-storm .weather-name { color: #ffc107; }
+        .weather-storm .weather-bonus { color: #bdbdbd; }
+        .weather-fog { background: linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%); border-color: #b0bec5; }
+        .weather-fog .weather-name { color: #546e7a; }
+        .weather-fog .weather-bonus { color: #78909c; }
+        .weather-night { background: linear-gradient(135deg, #1a237e 0%, #311b92 100%); border-color: #4527a0; }
+        .weather-night .weather-name { color: #e3f2fd; }
+        .weather-night .weather-bonus { color: #9fa8da; }
+        
+        /* Weather effects overlay */
+        .weather-effect {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .rain-drop {
+            position: absolute; width: 2px; height: 20px;
+            background: linear-gradient(transparent, rgba(130, 160, 200, 0.7));
+            animation: fall linear infinite;
+            box-shadow: 0 0 3px rgba(130, 160, 220, 0.4);
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+        
+        /* Location switcher styles */
+        .location-switcher {
+            display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;
+        }
+        .location-btn {
+            flex: 1; max-width: 200px;
+            padding: 12px 20px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-radius: 15px;
+            background: rgba(255,255,255,0.95);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 15px; font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            color: #333;
+        }
+        .location-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+        .location-btn.lake.active {
+            background: linear-gradient(135deg, #4a7c59, #5d9c6f);
+            border-color: #3d6b4a;
+            color: white;
+        }
+        .location-btn.sea.active {
+            background: linear-gradient(135deg, #1e5799, #2989d8);
+            border-color: #154a7a;
+            color: white;
+        }
+        .location-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.7);
+        }
+        .location-timer {
+            font-size: 11px; color: #666; margin-top: 4px; text-align: center;
+        }
+        
+        /* New fishing placeholder with perch and bushes */
+        .fishing-placeholder {
+            width: 100%; height: 250px;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+        .fishing-placeholder.lake::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #7FB882 0%, #5D9C6F 50%, #4A7C59 100%);
+            z-index: 0;
+        }
+        .fishing-placeholder.sea::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #87CEEB 0%, #5DBCD8 50%, #4A9FB5 100%);
+            z-index: 0;
+        }
+        .bush-left {
+            position: absolute; left: 0; bottom: 0;
+            width: 35%; height: 100%;
+            background: url('https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Left_Kust.png') no-repeat left bottom;
+            background-size: contain;
+            z-index: 2;
+        }
+        .bush-right {
+            position: absolute; right: 0; bottom: 0;
+            width: 35%; height: 100%;
+            background: url('https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Rit_Kust.png') no-repeat right bottom;
+            background-size: contain;
+            z-index: 2;
+        }
+        .perch {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            max-width: 280px;
+            height: auto;
+            z-index: 1;
+            animation: perch-swim 2s ease-in-out infinite;
+        }
+        @keyframes perch-swim {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateY(-10px);
+            }
+            50% {
+                transform: translate(-50%, -50%) translateY(10px);
+            }
+        }
+        .perch.struggling {
+            animation: perch-struggle 0.15s linear infinite !important;
+        }
+        @keyframes perch-struggle {
+            0% { transform: translate(-50%, -50%) translateX(-5px) translateY(-5px); }
+            25% { transform: translate(-50%, -50%) translateX(5px) translateY(5px); }
+            50% { transform: translate(-50%, -50%) translateX(-5px) translateY(5px); }
+            75% { transform: translate(-50%, -50%) translateX(5px) translateY(-5px); }
+            100% { transform: translate(-50%, -50%) translateX(-5px) translateY(-5px); }
+        }
     </style>
 </head>
 <body>
+<div class="weather-effect" id="weather-effect"></div>
 <div class="container">
     <h1 class="game-title">🎣 Дизайнерская Рыбалка</h1>
 
@@ -217,8 +406,30 @@
             <div id="daily-tasks-list" class="daily-tasks-list"></div>
         </div>
 
+        <div id="weather-widget" class="weather-widget" style="display:none;">
+            <div class="weather-icon" id="weather-icon">☀️</div>
+            <div class="weather-info">
+                <div class="weather-name" id="weather-name">Солнечно</div>
+                <div class="weather-bonus" id="weather-bonus">+20% к редким рыбам</div>
+            </div>
+        </div>
+
+        <div class="location-switcher">
+            <button class="location-btn lake active" id="loc-btn-lake" onclick="switchLocation('lake')">
+                <span>🏞️</span> Бобровое озеро
+            </button>
+            <button class="location-btn sea" id="loc-btn-sea" onclick="switchLocation('sea')" disabled>
+                <span>🌊</span> Море
+            </button>
+        </div>
+        <div id="location-timer" class="location-timer"></div>
+
         <div id="trophy-display">
-            <img id="trophy-placeholder" src="https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/hook-illustration.png">
+            <div id="trophy-placeholder" class="fishing-placeholder lake">
+                <div class="bush-left"></div>
+                <img src="https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Okun.png" class="perch" id="perch" alt="Perch">
+                <div class="bush-right"></div>
+            </div>
             <img id="trophy-img" src="">
         </div>
         <div id="result" style="font-size: 18px; font-weight:bold; margin:10px 0;">Проверка снастей...</div>
@@ -237,8 +448,8 @@
         </div>
 
         <div class="bait-group">
-            <div class="bait-btn active" onclick="setBait('worm', this)">🪱<span>Червь</span></div>
-            <div class="bait-btn" onclick="setBait('maggot', this)">🐛<span>Опарыш</span></div>
+            <div class="bait-btn active" onclick="setBait('worm', this)">🐛<span>Червь</span></div>
+            <div class="bait-btn" onclick="setBait('maggot', this)">🪰<span>Опарыш</span></div>
             <div class="bait-btn" onclick="setBait('lure', this)">✨<span>Блесна</span></div>
             <div class="bait-btn" onclick="setBait('corn', this)">🌽<span>Кукуруза</span></div>
         </div>
@@ -297,35 +508,92 @@
     const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     const fishes = [
-        { name: "Старый сапог", rarity: "common", chance: 5, minW: 0.7, maxW: 0.7, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/png-transparent-boots-shoe-hiking-broken-leather-footwear-obsolete-dirty-vintage-grunge.png", type: "trash" },
-        { name: "Консервная банка", rarity: "common", chance: 4, minW: 0.2, maxW: 0.2, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/pngtree-rusty-tin-can-isolated-on-white-isolated-picture-image_13070033.png", type: "trash" },
-        { name: "Ржавая цепь", rarity: "common", chance: 3, minW: 2.5, maxW: 2.5, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Rusty_chain_on_wooden_deck_in_Loddebo.jpg", type: "trash" },
-        { name: "Пластиковая бутылка", rarity: "common", chance: 3, minW: 0.1, maxW: 0.1, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/360_F_21770579_J48bIXW1eWGV6VRY5E8wMslwTHcrVYqe.jpg", type: "trash" },
-        { name: "Уклейка", rarity: "common", chance: 15, minW: 0.02, maxW: 0.1, xp: 10, image: "https://avatars.mds.yandex.net/i?id=c6549a78d671a871bc4b2e2a70ba497febe68eda-4011145-images-thumbs&n=13", type: "peaceful" },
-        { name: "Плотва", rarity: "common", chance: 15, minW: 0.1, maxW: 0.8, xp: 12, image: "https://avatars.mds.yandex.net/i?id=7a9554ada6dae4229dac2d6bef28d4dc4ad38dde-5294444-images-thumbs&n=13", type: "peaceful" },
-        { name: "Карась", rarity: "common", chance: 12, minW: 0.2, maxW: 1.5, xp: 15, image: "https://i.ytimg.com/vi/Vy8rRsfMbYY/maxresdefault.jpg", type: "peaceful" },
-        { name: "Окунь", rarity: "common", chance: 12, minW: 0.3, maxW: 2.0, xp: 18, image: "https://i.ytimg.com/vi/N55g_NvEu9c/maxresdefault.jpg", type: "predator" },
-        { name: "Красноперка", rarity: "common", chance: 10, minW: 0.1, maxW: 0.5, xp: 12, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Krasnoperka.png", type: "peaceful" },
-        { name: "Густера", rarity: "common", chance: 8, minW: 0.2, maxW: 1.2, xp: 15, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Gustera.png", type: "peaceful" },
-        { name: "Лещ", rarity: "rare", chance: 6, minW: 1.0, maxW: 5.0, xp: 40, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Lesh.png", type: "peaceful" },
-        { name: "Линь", rarity: "rare", chance: 5, minW: 0.8, maxW: 4.0, xp: 45, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/lin.png", type: "peaceful" },
-        { name: "Щука", rarity: "rare", chance: 5, minW: 1.5, maxW: 15.0, xp: 50, image: "https://avatars.mds.yandex.net/i?id=fa768e0c65f5fa7d49eb004a911fd13d_l-4011302-images-thumbs&n=13", type: "predator" },
-        { name: "Судак", rarity: "epic", chance: 3, minW: 2.0, maxW: 12.0, xp: 100, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Sudak.png", type: "predator" },
-        { name: "Карп", rarity: "epic", chance: 3, minW: 2.0, maxW: 12.0, xp: 100, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Karp.png", type: "predator" },
-        { name: "Налим", rarity: "epic", chance: 3, minW: 1.5, maxW: 10.0, xp: 110, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Nalim.png", type: "predator" },
-        { name: "Сом", rarity: "epic", chance: 2, minW: 10.0, maxW: 80.0, xp: 150, image: "https://avatars.mds.yandex.net/i?id=f25c27a2e5c2428546dbeb9d5642cc59c897acb0-5233251-images-thumbs&n=13", type: "predator" },
-        { name: "Осетр", rarity: "legend", chance: 0.5, minW: 20.0, maxW: 150.0, xp: 600, image: "https://i.pinimg.com/736x/a5/5a/18/a55a18d9af024706fc06549cd15d1713.jpg", type: "peaceful" },
-        { name: "Белуга", rarity: "legend", chance: 0.3, minW: 50.0, maxW: 300.0, xp: 1000, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Beluga.png", type: "peaceful" },
-        { name: "Золотая рыбка", rarity: "legend", chance: 0.1, minW: 0.1, maxW: 0.5, xp: 2000, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Zolota.png", type: "legendary" }
+        // === БОБРОВОЕ ОЗЕРО (пресноводные) ===
+        { name: "Сапог", rarity: "common", chance: 5, minW: 0.7, maxW: 0.7, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Sapojina.png", type: "trash", location: "lake" },
+        { name: "Банка", rarity: "common", chance: 4, minW: 0.2, maxW: 0.2, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/pngtree-rusty-tin-can-isolated-on-white-isolated-picture-image_13070033.png", type: "trash", location: "lake" },
+        { name: "Ржавая цепь", rarity: "common", chance: 3, minW: 2.5, maxW: 2.5, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Rusty_chain_on_wooden_deck_in_Loddebo.jpg", type: "trash", location: "lake" },
+        { name: "Бутылка", rarity: "common", chance: 3, minW: 0.1, maxW: 0.1, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/360_F_21770579_J48bIXW1eWGV6VRY5E8wMslwTHcrVYqe.jpg", type: "trash", location: "lake" },
+        { name: "Уклейка", rarity: "common", chance: 15, minW: 0.02, maxW: 0.1, xp: 10, image: "https://avatars.mds.yandex.net/i?id=c6549a78d671a871bc4b2e2a70ba497febe68eda-4011145-images-thumbs&n=13", type: "peaceful", location: "lake" },
+        { name: "Плотва", rarity: "common", chance: 15, minW: 0.1, maxW: 0.8, xp: 12, image: "https://avatars.mds.yandex.net/i?id=7a9554ada6dae4229dac2d6bef28d4dc4ad38dde-5294444-images-thumbs&n=13", type: "peaceful", location: "lake" },
+        { name: "Карась", rarity: "common", chance: 12, minW: 0.2, maxW: 1.5, xp: 15, image: "https://i.ytimg.com/vi/Vy8rRsfMbYY/maxresdefault.jpg", type: "peaceful", location: "lake" },
+        { name: "Окунь", rarity: "common", chance: 12, minW: 0.3, maxW: 2.0, xp: 18, image: "https://i.ytimg.com/vi/N55g_NvEu9c/maxresdefault.jpg", type: "predator", location: "lake" },
+        { name: "Красноперка", rarity: "common", chance: 10, minW: 0.1, maxW: 0.5, xp: 12, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Krasnoperka.png", type: "peaceful", location: "lake" },
+        { name: "Густера", rarity: "common", chance: 8, minW: 0.2, maxW: 1.2, xp: 15, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Gustera.png", type: "peaceful", location: "lake" },
+        { name: "Лещ", rarity: "rare", chance: 6, minW: 1.0, maxW: 5.0, xp: 40, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Lesh.png", type: "peaceful", location: "lake" },
+        { name: "Линь", rarity: "rare", chance: 5, minW: 0.8, maxW: 4.0, xp: 45, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/lin.png", type: "peaceful", location: "lake" },
+        { name: "Щука", rarity: "rare", chance: 5, minW: 1.5, maxW: 15.0, xp: 50, image: "https://avatars.mds.yandex.net/i?id=fa768e0c65f5fa7d49eb004a911fd13d_l-4011302-images-thumbs&n=13", type: "predator", location: "lake" },
+        { name: "Судак", rarity: "epic", chance: 3, minW: 2.0, maxW: 12.0, xp: 100, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Sudak.png", type: "predator", location: "lake" },
+        { name: "Карп", rarity: "epic", chance: 3, minW: 2.0, maxW: 12.0, xp: 100, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Karp.png", type: "predator", location: "lake" },
+        { name: "Налим", rarity: "epic", chance: 3, minW: 1.5, maxW: 10.0, xp: 110, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Nalim.png", type: "predator", location: "lake" },
+        { name: "Сом", rarity: "epic", chance: 2, minW: 10.0, maxW: 80.0, xp: 150, image: "https://avatars.mds.yandex.net/i?id=f25c27a2e5c2428546dbeb9d5642cc59c897acb0-5233251-images-thumbs&n=13", type: "predator", location: "lake" },
+        { name: "Осетр", rarity: "legend", chance: 0.5, minW: 20.0, maxW: 150.0, xp: 600, image: "https://i.pinimg.com/736x/a5/5a/18/a55a18d9af024706fc06549cd15d1713.jpg", type: "peaceful", location: "lake" },
+        { name: "Белуга", rarity: "legend", chance: 0.3, minW: 50.0, maxW: 300.0, xp: 1000, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Beluga.png", type: "peaceful", location: "lake" },
+        { name: "Золотая рыбка", rarity: "legend", chance: 0.1, minW: 0.1, maxW: 0.5, xp: 2000, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Zolota.png", type: "legendary", location: "lake" },
+        
+        // === МОРЕ (морские обитатели) ===
+        { name: "Водоросли", rarity: "common", chance: 5, minW: 0.3, maxW: 0.5, xp: 5, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Seaweed.png", type: "trash", location: "sea" },
+        { name: "Медуза", rarity: "common", chance: 12, minW: 0.5, maxW: 2.0, xp: 15, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Jellyfish.png", type: "peaceful", location: "sea" },
+        { name: "Креветка", rarity: "common", chance: 15, minW: 0.05, maxW: 0.2, xp: 12, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Shrimp.png", type: "peaceful", location: "sea" },
+        { name: "Сардина", rarity: "common", chance: 18, minW: 0.1, maxW: 0.3, xp: 14, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Sardine.png", type: "peaceful", location: "sea" },
+        { name: "Ставрида", rarity: "common", chance: 14, minW: 0.2, maxW: 0.5, xp: 16, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Horse_mackerel.png", type: "peaceful", location: "sea" },
+        { name: "Скумбрия", rarity: "rare", chance: 8, minW: 0.5, maxW: 2.5, xp: 35, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Mackerel.png", type: "peaceful", location: "sea" },
+        { name: "Камбала", rarity: "rare", chance: 7, minW: 0.8, maxW: 4.0, xp: 42, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Flounder.png", type: "peaceful", location: "sea" },
+        { name: "Барракуда", rarity: "rare", chance: 5, minW: 1.5, maxW: 8.0, xp: 55, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Barracuda.png", type: "predator", location: "sea" },
+        { name: "Тунец", rarity: "epic", chance: 4, minW: 10.0, maxW: 80.0, xp: 120, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Tuna.png", type: "predator", location: "sea" },
+        { name: "Кальмар", rarity: "epic", chance: 4, minW: 5.0, maxW: 25.0, xp: 115, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Squid.png", type: "predator", location: "sea" },
+        { name: "Осьминог", rarity: "epic", chance: 3, minW: 8.0, maxW: 40.0, xp: 140, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Octopus.png", type: "predator", location: "sea" },
+        { name: "Морской дьявол", rarity: "legend", chance: 0.8, minW: 100.0, maxW: 400.0, xp: 700, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Manta_ray.png", type: "legendary", location: "sea" },
+        { name: "Белая акула", rarity: "legend", chance: 0.4, minW: 200.0, maxW: 800.0, xp: 1200, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Great_white_shark.png", type: "predator", location: "sea" },
+        { name: "Рыба-клоун", rarity: "legend", chance: 0.2, minW: 0.1, maxW: 0.3, xp: 1800, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Clownfish.png", type: "legendary", location: "sea" },
+        
+        // === РЫБООХРАНА (специальный улов для сети) ===
+        { name: "Рыбоохрана", rarity: "legend", chance: 0, minW: 0, maxW: 0, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/riboohrana.png", type: "special", location: "both" }
     ];
 
     let currentBait = 'worm';
+    let currentLocation = 'lake';
+    let currentLocationTime = null;
     let nickname = localStorage.getItem("nick") || "";
     let inventory = {};
     let stats = { caught: 0, totalWeight: 0, xp: 0, level: 1 };
     let bestF = { weight: 0 };
     let timerInterval = null;
     let dailyTasks = [];
+    let currentWeather = null;
+    
+    // Weather types with multipliers for different fish rarities
+    const WEATHER_TYPES = [
+        { id: 'sunny', name: 'Солнечно', icon: '☀️', class: '', 
+          bonus: '+15% к обычным рыбам', multipliers: { common: 1.15, rare: 1.0, epic: 1.0, legend: 1.0, trash: 0.9 } },
+        { id: 'cloudy', name: 'Облачно', icon: '☁️', class: '', 
+          bonus: 'Равный клёв', multipliers: { common: 1.0, rare: 1.0, epic: 1.0, legend: 1.0, trash: 1.0 } },
+        { id: 'rain', name: 'Дождь', icon: '🌧️', class: 'weather-rain', 
+          bonus: '+20% к редким рыбам', multipliers: { common: 0.9, rare: 1.2, epic: 1.1, legend: 1.0, trash: 0.8 } },
+        { id: 'storm', name: 'Гроза', icon: '⛈️', class: 'weather-storm', 
+          bonus: '+25% к эпическим рыбам', multipliers: { common: 0.7, rare: 1.1, epic: 1.25, legend: 1.15, trash: 0.6 } },
+        { id: 'fog', name: 'Туман', icon: '🌫️', class: 'weather-fog', 
+          bonus: '+20% к легендарным рыбам', multipliers: { common: 0.8, rare: 0.95, epic: 1.1, legend: 1.2, trash: 0.7 } },
+        { id: 'night', name: 'Ночь', icon: '🌙', class: 'weather-night', 
+          bonus: '+15% к хищникам', multipliers: { common: 0.9, rare: 1.1, epic: 1.15, legend: 1.15, trash: 0.85 } }
+    ];
+
+    const LOCATIONS = {
+        lake: { 
+            name: 'Бобровое озеро', 
+            icon: '🏞️', 
+            bg: 'url("https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/hd_04b997bd6476360f3a6f9f0cc60e35e9.png") no-repeat center center fixed',
+            bgSize: 'cover',
+            cooldown: 0 
+        },
+        sea: { 
+            name: 'Море', 
+            icon: '🌊', 
+            bg: 'url("https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/More.jpg") no-repeat center center fixed',
+            bgSize: 'cover',
+            cooldown: 0 
+        }
+    };
+
     const DAILY_TASKS_POOL = [
         { type: 'catch_fish', fish: 'Уклейка', count: 15, xp: 50, icon: '🐟' },
         { type: 'catch_fish', fish: 'Плотва', count: 10, xp: 60, icon: '🐠' },
@@ -446,6 +714,162 @@
         }).join('');
     }
 
+    // === WEATHER SYSTEM ===
+    function getWeatherPeriod() {
+        // Returns period index (0-7) for 3-hour intervals
+        const now = new Date();
+        const hours = now.getHours();
+        return Math.floor(hours / 3);
+    }
+
+    function getWeatherSeed() {
+        // Generate a seed based on date and period for consistent weather
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+        const period = getWeatherPeriod();
+        return `${dateStr}-${period}`;
+    }
+
+    function seededRandom(seed) {
+        // Simple seeded random function
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+            hash = hash & hash;
+        }
+        const x = Math.sin(hash) * 10000;
+        return x - Math.floor(x);
+    }
+
+    function getCurrentWeather() {
+        const seed = getWeatherSeed();
+        const rand = seededRandom(seed);
+        const weatherIndex = Math.floor(rand * WEATHER_TYPES.length);
+        return WEATHER_TYPES[weatherIndex];
+    }
+
+    function isNightTime() {
+        const hours = new Date().getHours();
+        return hours >= 22 || hours < 6;
+    }
+
+    function updateWeather() {
+        currentWeather = getCurrentWeather();
+        
+        // Override to night weather if it's nighttime
+        if (isNightTime()) {
+            currentWeather = WEATHER_TYPES.find(w => w.id === 'night');
+        }
+        
+        const widget = document.getElementById("weather-widget");
+        const icon = document.getElementById("weather-icon");
+        const name = document.getElementById("weather-name");
+        const bonus = document.getElementById("weather-bonus");
+        
+        widget.className = "weather-widget " + (currentWeather.class || "");
+        icon.innerText = currentWeather.icon;
+        name.innerText = currentWeather.name;
+        bonus.innerText = currentWeather.bonus;
+        widget.style.display = "flex";
+        
+        // Save to localStorage
+        localStorage.setItem("weather_seed", getWeatherSeed());
+        localStorage.setItem("weather_id", currentWeather.id);
+        
+        // Create weather effects
+        createWeatherEffect(currentWeather.id);
+    }
+
+    function createWeatherEffect(weatherId) {
+        const container = document.getElementById("weather-effect");
+        container.innerHTML = "";
+        
+        if (weatherId === 'rain' || weatherId === 'storm') {
+            // Create rain drops
+            const dropCount = weatherId === 'storm' ? 100 : 60;
+            for (let i = 0; i < dropCount; i++) {
+                const drop = document.createElement("div");
+                drop.className = "rain-drop";
+                drop.style.left = Math.random() * 100 + "%";
+                drop.style.animationDuration = (0.5 + Math.random() * 0.4) + "s";
+                drop.style.animationDelay = Math.random() * 2 + "s";
+                drop.style.opacity = 0.4 + Math.random() * 0.4;
+                container.appendChild(drop);
+            }
+        }
+        // Fog effect - subtle opacity overlay
+        if (weatherId === 'fog') {
+            container.style.background = "radial-gradient(ellipse at center, rgba(200,200,200,0.3) 0%, transparent 70%)";
+        } else {
+            container.style.background = "transparent";
+        }
+    }
+
+    function getWeatherMultiplier(rarity) {
+        if (!currentWeather) return 1.0;
+        return currentWeather.multipliers[rarity] || 1.0;
+    }
+
+    // === LOCATION SYSTEM ===
+    function getAvailableFish() {
+        if (currentLocation === 'both') {
+            return fishes.filter(f => f.location === 'both' || f.location === 'lake' || f.location === 'sea');
+        }
+        return fishes.filter(f => f.location === currentLocation || f.location === 'both');
+    }
+
+    function applyLocationBackground() {
+        const locData = LOCATIONS[currentLocation];
+        if (locData && locData.bg) {
+            document.body.style.background = locData.bg;
+            document.body.style.backgroundSize = locData.bgSize || 'cover';
+        }
+    }
+
+    function switchLocation(loc) {
+        if (!nickname || loc === currentLocation) return;
+
+        const locData = LOCATIONS[loc];
+        if (!locData) return;
+
+        currentLocation = loc;
+        currentLocationTime = Date.now();
+
+        // Apply new background
+        applyLocationBackground();
+        
+        // Update fishing placeholder background
+        const placeholder = document.getElementById("trophy-placeholder");
+        if (placeholder) {
+            placeholder.classList.remove("lake", "sea");
+            placeholder.classList.add(loc);
+        }
+
+        // Update UI
+        document.querySelectorAll('.location-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`loc-btn-${loc}`).classList.add('active');
+
+        // Save to localStorage
+        localStorage.setItem("currentLocation", loc);
+        localStorage.setItem("currentLocationTime", currentLocationTime.toString());
+
+        updateLocationButtons();
+        document.getElementById("result").innerText = `Перешёл на локацию: ${locData.name}`;
+    }
+
+    function updateLocationButtons() {
+        // No cooldown anymore - buttons always enabled
+        const seaBtn = document.getElementById("loc-btn-sea");
+        const timerEl = document.getElementById("location-timer");
+        
+        if (currentLocation === 'sea') {
+            seaBtn.disabled = false;
+        } else {
+            seaBtn.disabled = false;
+        }
+        timerEl.innerText = "";
+    }
+
     function getFishIcon(fishName) {
         const fish = fishes.find(f => f.name === fishName);
         if (!fish) return '🐟';
@@ -516,13 +940,18 @@
         if (rarity === 'rare') return 'rare-txt';
         if (rarity === 'epic') return 'epic-txt';
         if (rarity === 'legend') return 'legend-txt';
+        if (rarity === 'special') return 'special-txt';
         return '';
     }
 
     function applyGlow(rarity) {
         const disp = document.getElementById("trophy-display");
-        disp.classList.remove("glow-rare", "glow-epic", "glow-legend");
-        if(rarity !== 'common') disp.classList.add('glow-' + rarity);
+        disp.classList.remove("glow-rare", "glow-epic", "glow-legend", "glow-special");
+        if(rarity === 'special') {
+            disp.classList.add('glow-special');
+        } else if(rarity !== 'common') {
+            disp.classList.add('glow-' + rarity);
+        }
     }
 
     async function addXP(amount) {
@@ -578,24 +1007,29 @@
 
     async function checkTimers() {
         if (!nickname) return;
-        
+
         document.getElementById("fishBtn").disabled = true;
         document.getElementById("netBtn").disabled = true;
 
         const { data } = await db.from("players").select("*").eq("nickname", nickname).single();
         if (data) {
             // Удочка: 10 минут (600000 мс)
-            const castEnd = data.last_cast ? new Date(data.last_cast).getTime() + 600000 : 0; 
+            const castEnd = data.last_cast ? new Date(data.last_cast).getTime() + 600000 : 0;
             if (castEnd > Date.now()) {
                 runTimer(castEnd);
             } else {
                 document.getElementById("fishBtn").disabled = false;
                 document.getElementById("result").innerText = "Снасти готовы!";
             }
-            
-            // Сеть: 24 часа (86400000 мс)
-            const netEnd = data.last_net_cast ? new Date(data.last_net_cast).getTime() + 86400000 : 0;
-            document.getElementById("netBtn").disabled = (netEnd > Date.now());
+
+            // Сеть: 3 часа (10800000 мс)
+            const netEnd = data.last_net_cast ? new Date(data.last_net_cast).getTime() + 10800000 : 0;
+            if (netEnd > Date.now()) {
+                const minsLeft = Math.ceil((netEnd - Date.now()) / 60000);
+                document.getElementById("netBtn").disabled = true;
+            } else {
+                document.getElementById("netBtn").disabled = false;
+            }
         } else {
             document.getElementById("fishBtn").disabled = false;
             document.getElementById("netBtn").disabled = false;
@@ -642,11 +1076,12 @@
             // Загрузка глобального рекорда
             await loadGlobalRecord();
             
-            const { data: hist } = await db.from("catches").select("*").order("id", { ascending: false }).limit(5);
+            const { data: hist } = await db.from("catches").select("*").order("created_at", { ascending: false }).limit(5);
             if (hist) document.getElementById("catch-log").innerHTML = hist.map(h => {
                 const fishData = fishes.find(x => x.name === h.fish_name);
                 const rClass = getRarityClass(fishData?.rarity);
-                return `<div class="log-item"><img src="${fishData?.image}" class="log-img"> <span><b style="color:${getNickColor(h.nickname)}">${h.nickname}</b>: <span class="${rClass}">${h.fish_name}</span> (${h.weight.toFixed(1)}кг)</span></div>`;
+                const time = new Date(h.created_at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+                return `<div class="log-item"><img src="${fishData?.image}" class="log-img"> <div style="flex:1"><b style="color:${getNickColor(h.nickname)}">${h.nickname}</b>: <span class="${rClass}">${h.fish_name}</span> (${h.weight.toFixed(1)}кг)</div><span style="color:#999;font-size:12px;margin-left:8px">${time}</span></div>`;
             }).join("");
         } catch (e) {}
     }
@@ -686,12 +1121,14 @@
 
         const display = document.getElementById("trophy-display");
         const placeholder = document.getElementById("trophy-placeholder");
+        const perch = document.getElementById("perch");
         const trophyImg = document.getElementById("trophy-img");
-        this.disabled = true; 
+        this.disabled = true;
         document.getElementById("result").innerText = "Заброс на " + currentBait + "...";
         trophyImg.style.display = "none";
-        placeholder.style.display = "block";
-        display.classList.remove("glow-rare", "glow-epic", "glow-legend");
+        display.classList.remove("has-bg");
+        perch.classList.remove("struggling");
+        display.classList.remove("glow-rare", "glow-epic", "glow-legend", "glow-special");
         display.classList.add("fishing-active");
 
         await db.from("players").upsert({ nickname, last_cast: new Date().toISOString() }, { onConflict: 'nickname' });
@@ -699,12 +1136,26 @@
 
         setTimeout(async () => {
             display.classList.remove("fishing-active");
-            let baitModifiedFishes = fishes.map(f => {
+            perch.classList.add("struggling");
+
+            // Ждём 1 секунду пока окунь дрожит
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Get fish for current location only
+            const locationFishes = getAvailableFish();
+            
+            // Apply weather multipliers to fish chances
+            let baitModifiedFishes = locationFishes.map(f => {
                 let m = 1.0;
                 if (currentBait === 'worm' && f.rarity === 'common') m = 1.2;
                 if (currentBait === 'maggot') { if(f.type === 'peaceful') m = 2.0; if(f.type === 'trash') m = 0.5; }
                 if (currentBait === 'corn' && (f.name === 'Карась' || f.name === 'Белуга')) m = 3.0;
                 if (currentBait === 'lure') m = (f.type === 'predator') ? 4.0 : 0.1;
+
+                // Apply weather multiplier based on fish rarity
+                const weatherMult = getWeatherMultiplier(f.rarity);
+                m *= weatherMult;
+
                 return { ...f, tempChance: f.chance * m };
             });
 
@@ -715,7 +1166,9 @@
             let w = Number((Math.random() * (f.maxW - f.minW) + f.minW).toFixed(1));
             applyGlow(f.rarity);
             trophyImg.src = f.image; trophyImg.style.display = "block";
+            display.classList.add("has-bg");
             placeholder.style.display = "none";
+            perch.classList.remove("struggling");
             document.getElementById("result").innerHTML = `Улов: <span class="${getRarityClass(f.rarity)}">${f.name}</span> (${w}кг)`;
             
             await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
@@ -731,37 +1184,80 @@
 
     document.getElementById("netBtn").onclick = async function() {
         if (!nickname) return;
-        
+
         const { data: check } = await db.from("players").select("last_net_cast").eq("nickname", nickname).single();
         if (check && check.last_net_cast) {
-            const wait = new Date(check.last_net_cast).getTime() + 86400000;
+            const wait = new Date(check.last_net_cast).getTime() + 10800000; // 3 часа
             if (wait > Date.now()) {
-                alert("Сеть ещё чинят!");
+                const minsLeft = Math.ceil((wait - Date.now()) / 60000);
+                alert(`Сеть ещё чинят! Осталось ${minsLeft} мин`);
                 checkTimers();
                 return;
             }
         }
 
-        this.disabled = true; 
+        this.disabled = true;
         document.getElementById("result").innerText = "Тянем сеть... 🕸️";
         document.getElementById("trophy-display").classList.add("fishing-active");
 
         await db.from("players").upsert({ nickname, last_net_cast: new Date().toISOString() }, { onConflict: 'nickname' });
-        
+
+        // 10% шанс поймать рыбоохрану
+        const fisheryGuardChance = 0.1;
+        if (Math.random() < fisheryGuardChance) {
+            // РЫБООХРАНА! Забирает всю рыбу
+            setTimeout(async () => {
+                document.getElementById("trophy-display").classList.remove("fishing-active");
+                const perch = document.getElementById("perch");
+                if (perch) perch.classList.remove("struggling");
+                const guardFish = fishes.find(f => f.name === "Рыбоохрана");
+
+                document.getElementById("trophy-img").src = guardFish.image;
+                document.getElementById("trophy-img").style.display = "block";
+                document.getElementById("trophy-placeholder").style.display = "none";
+                document.getElementById("result").innerHTML = `<span style="color:#e74c3c;font-weight:bold">🚨 РЫБООХРАНА!</span>`;
+                
+                // Удаляем все уловы игрока
+                await db.from("catches").delete().eq("nickname", nickname);
+                
+                // Сбрасываем статистику
+                inventory = {};
+                stats.caught = 0;
+                stats.totalWeight = 0;
+                
+                document.getElementById("result").innerHTML = `<span style="color:#e74c3c;font-weight:bold">🚨 РЫБООХРАНА! Всю рыбу изъяли! 🚨</span>`;
+                
+                updateUI();
+                loadData();
+            }, 1500);
+            return;
+        }
+
         let count = 0;
         let sessionWeight = 0;
         let int = setInterval(async () => {
-            let total = fishes.reduce((s, f) => s + f.chance, 0);
-            let roll = Math.random() * total, sum = 0, f = fishes[0];
-            for (let x of fishes) { sum += x.chance; if (roll < sum) { f = x; break; } }
+            // Get fish for current location only
+            const locationFishes = getAvailableFish();
+            
+            // Apply weather multipliers to fish chances for net
+            let weatherModifiedFishes = locationFishes.map(f => {
+                const weatherMult = getWeatherMultiplier(f.rarity);
+                return { ...f, tempChance: f.chance * weatherMult };
+            });
+
+            let total = weatherModifiedFishes.reduce((s, f) => s + f.tempChance, 0);
+            let roll = Math.random() * total, sum = 0, f = locationFishes[0];
+            for (let x of weatherModifiedFishes) { sum += x.tempChance; if (roll < sum) { f = x; break; } }
             
             let w = Number((Math.random() * (f.maxW - f.minW) + f.minW).toFixed(1));
             sessionWeight += w;
 
             applyGlow(f.rarity);
-            document.getElementById("trophy-img").src = f.image; 
+            document.getElementById("trophy-img").src = f.image;
             document.getElementById("trophy-img").style.display = "block";
             document.getElementById("trophy-placeholder").style.display = "none";
+            const perch = document.getElementById("perch");
+            if (perch) perch.classList.remove("struggling");
             document.getElementById("result").innerHTML = `В сети: <span class="${getRarityClass(f.rarity)}">${f.name}</span>!`;
             
             await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
@@ -789,9 +1285,33 @@
         if (nickname) {
             document.getElementById("auth-panel").classList.add("hidden");
             syncInventory();
+
+            // Load saved location
+            const savedLoc = localStorage.getItem("currentLocation");
+            const savedLocTime = localStorage.getItem("currentLocationTime");
+            if (savedLoc && LOCATIONS[savedLoc]) {
+                currentLocation = savedLoc;
+                currentLocationTime = savedLocTime ? parseInt(savedLocTime) : null;
+
+                // Update UI
+                document.querySelectorAll('.location-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(`loc-btn-${savedLoc}`).classList.add('active');
+
+                // Apply saved location background
+                applyLocationBackground();
+                
+                // Apply fishing placeholder background
+                const placeholder = document.getElementById("trophy-placeholder");
+                if (placeholder) {
+                    placeholder.classList.remove("lake", "sea");
+                    placeholder.classList.add(savedLoc);
+                }
+            }
         } else {
             document.getElementById("result").innerText = "Представься, рыбак!";
         }
+        updateWeather();
+        updateLocationButtons();
         loadData();
         setInterval(loadData, 10000);
     };
