@@ -337,11 +337,24 @@
             overflow: hidden;
             border-radius: 20px;
         }
+        
+        /* Сохраняем пропорции на мобильных */
+        @media (max-width: 480px) {
+            #trophy-display {
+                min-height: 200px;
+            }
+            .fishing-placeholder {
+                height: 200px;
+            }
+            #trophy-display #trophy-img {
+                max-height: 200px;
+            }
+        }
         .fishing-placeholder.lake::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, #72a83a 0%, #6db33f 50%, #549e45 100%);
+            background: linear-gradient(180deg, #87CEEB 0%, #5DBCD8 50%, #4A9FB5 100%);
             z-index: 0;
         }
         .fishing-placeholder.sea::before {
