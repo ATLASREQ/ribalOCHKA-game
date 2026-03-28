@@ -65,7 +65,7 @@
         .glow-rare {
             box-shadow: 0 0 25px var(--rare), 0 0 50px var(--rare), inset 0 0 20px rgba(0, 119, 255, 0.3);
             border: 4px solid var(--rare) !important;
-            border-radius: 20px !important;
+            border-radius: 26px !important;
             animation: glow-pulse-rare 2s ease-in-out infinite;
         }
         @keyframes glow-pulse-rare {
@@ -76,7 +76,7 @@
         .glow-epic {
             box-shadow: 0 0 30px var(--epic), 0 0 60px var(--epic), inset 0 0 25px rgba(142, 68, 173, 0.3);
             border: 4px solid var(--epic) !important;
-            border-radius: 20px !important;
+            border-radius: 26px !important;
             animation: glow-pulse-epic 1.8s ease-in-out infinite;
         }
         @keyframes glow-pulse-epic {
@@ -87,18 +87,18 @@
         .glow-legend {
             box-shadow: 0 0 40px var(--legend), 0 0 80px var(--legend), inset 0 0 30px rgba(230, 126, 34, 0.3);
             border: 4px solid var(--legend) !important;
-            border-radius: 20px !important;
+            border-radius: 26px !important;
             animation: glow-pulse-legend 1.5s ease-in-out infinite;
         }
         @keyframes glow-pulse-legend {
             0%, 100% { box-shadow: 0 0 40px var(--legend), 0 0 80px var(--legend), inset 0 0 30px rgba(230, 126, 34, 0.3); }
             50% { box-shadow: 0 0 60px var(--legend), 0 0 120px var(--legend), inset 0 0 50px rgba(230, 126, 34, 0.5); }
         }
-        
+
         .glow-special {
             box-shadow: 0 0 50px #e74c3c, 0 0 100px #e74c3c, inset 0 0 40px rgba(231, 76, 60, 0.4);
             border: 4px solid #e74c3c !important;
-            border-radius: 20px !important;
+            border-radius: 26px !important;
             animation: glow-pulse-special 1.2s ease-in-out infinite;
         }
         @keyframes glow-pulse-special {
@@ -660,7 +660,12 @@
 
     // === DAILY TASKS SYSTEM ===
     function getTodayDate() {
-        return new Date().toISOString().split('T')[0];
+        const now = new Date();
+        // Используем локальную дату вместо UTC
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     function getSecondsUntilMidnight() {
@@ -715,40 +720,74 @@
     }
 
     async function loadDailyTasks() {
-        if (!nickname) return;
+        if (!nickname) {
+            console.log("loadDailyTasks: nickname не задан");
+            return;
+        }
         const today = getTodayDate();
+        console.log("loadDailyTasks: сегодня =", today, "nickname =", nickname);
 
         // Проверяем, есть ли задания на сегодня
-        const { data: existing } = await db.from("daily_tasks")
+        const { data: existing, error } = await db.from("daily_tasks")
             .select("*")
-            .eq("nickname", nickname)
-            .eq("date_assigned", today);
+            .eq("nickname", nickname);
 
-        if (existing && existing.length > 0) {
-            dailyTasks = existing;
+        if (error) {
+            console.error("loadDailyTasks: ошибка загрузки:", error);
+            return;
+        }
+
+        console.log("loadDailyTasks: найдено заданий:", existing?.length || 0);
+
+        // Фильтруем задания на сегодня (локальная дата)
+        const todayTasks = existing?.filter(t => t.date_assigned === today) || [];
+        console.log("loadDailyTasks: заданий на сегодня:", todayTasks.length);
+
+        if (todayTasks.length > 0) {
+            dailyTasks = todayTasks;
+            console.log("loadDailyTasks: загружены существующие задания");
         } else {
-            // Удаляем старые задания (на другие даты)
+            // Удаляем все старые задания
             await db.from("daily_tasks")
                 .delete()
-                .eq("nickname", nickname)
-                .neq("date_assigned", today);
+                .eq("nickname", nickname);
 
             // Создаём новые задания на сегодня
             const newTasks = generateDailyTasks();
+            console.log("loadDailyTasks: созданы новые задания:", newTasks);
             dailyTasks = [];
             for (const task of newTasks) {
-                const { data } = await db.from("daily_tasks").insert([{
+                const taskData = {
                     nickname,
                     task_type: task.type,
                     target_fish: task.fish || null,
                     target_count: task.count,
                     reward_xp: task.xp,
                     date_assigned: today,
-                    location: task.location || 'lake'
-                }]).select().single();
-                if (data) dailyTasks.push(data);
+                    current_count: 0,
+                    completed: false,
+                    claimed: false
+                };
+                
+                const { error: insertError } = await db.from("daily_tasks")
+                    .insert([taskData]);
+                
+                if (insertError) {
+                    console.error("loadDailyTasks: ошибка вставки:", insertError);
+                } else {
+                    // Загружаем только что созданное задание
+                    const { data: freshTask } = await db.from("daily_tasks")
+                        .select("*")
+                        .eq("nickname", nickname)
+                        .eq("task_type", task.type)
+                        .eq("target_fish", task.fish || null)
+                        .eq("date_assigned", today)
+                        .single();
+                    if (freshTask) dailyTasks.push(freshTask);
+                }
             }
         }
+        console.log("loadDailyTasks: итоговые задания:", dailyTasks);
         renderDailyTasks();
     }
 
@@ -765,13 +804,12 @@
         list.innerHTML = dailyTasks.map(task => {
             const progress = Math.min(100, (task.current_count / task.target_count) * 100);
             const completed = task.current_count >= task.target_count && !task.claimed;
-            const locationIcon = task.location === 'sea' ? '🌊' : task.location === 'lake' ? '🏞️' : '🌍';
 
             return `
             <div class="daily-task ${task.current_count >= task.target_count ? 'completed' : ''}">
                 <div class="task-icon">${task.target_fish ? getFishIcon(task.target_fish) : '🎣'}</div>
                 <div class="task-info">
-                    <div class="task-desc">${locationIcon} Поймать ${task.target_count} ${task.target_fish || 'рыб'}</div>
+                    <div class="task-desc">Поймать ${task.target_count} ${task.target_fish || 'рыб'}</div>
                     <div class="task-progress">${task.current_count} / ${task.target_count}</div>
                     <div class="task-bar-bg">
                         <div class="task-bar-fill" style="width: ${progress}%"></div>
