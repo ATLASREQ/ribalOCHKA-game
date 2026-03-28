@@ -336,14 +336,14 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, #7FB882 0%, #5D9C6F 50%, #4A7C59 100%);
+            background: linear-gradient(180deg, #86c543 0%, #6db33f 50%, #549e45 100%);
             z-index: 0;
         }
         .fishing-placeholder.sea::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, #87CEEB 0%, #5DBCD8 50%, #4A9FB5 100%);
+            background: linear-gradient(180deg, #65d0ca 0%, #4ab5c9 50%, #2b7ab8 100%);
             z-index: 0;
         }
         .bush-left {
@@ -595,20 +595,30 @@
     };
 
     const DAILY_TASKS_POOL = [
-        { type: 'catch_fish', fish: 'Уклейка', count: 15, xp: 50, icon: '🐟' },
-        { type: 'catch_fish', fish: 'Плотва', count: 10, xp: 60, icon: '🐠' },
-        { type: 'catch_fish', fish: 'Карась', count: 8, xp: 70, icon: '🎣' },
-        { type: 'catch_fish', fish: 'Окунь', count: 5, xp: 80, icon: '🦈' },
-        { type: 'catch_fish', fish: 'Красноперка', count: 7, xp: 65, icon: '🐟' },
-        { type: 'catch_fish', fish: 'Густера', count: 6, xp: 70, icon: '🐠' },
-        { type: 'catch_fish', fish: 'Лещ', count: 3, xp: 100, icon: '🏆' },
-        { type: 'catch_fish', fish: 'Щука', count: 2, xp: 120, icon: '🦈' },
-        { type: 'catch_fish', fish: 'Линь', count: 3, xp: 110, icon: '🎯' },
-        { type: 'catch_fish', fish: 'Карп', count: 2, xp: 130, icon: '👑' },
-        { type: 'catch_fish', fish: 'Судак', count: 1, xp: 150, icon: '⭐' },
-        { type: 'catch_fish', fish: 'Налим', count: 1, xp: 160, icon: '🌟' },
-        { type: 'catch_any', count: 20, xp: 80, icon: '🎒' },
-        { type: 'catch_any', count: 35, xp: 140, icon: '🏅' }
+        { type: 'catch_fish', fish: 'Уклейка', count: 15, xp: 50, icon: '🐟', location: 'lake' },
+        { type: 'catch_fish', fish: 'Плотва', count: 10, xp: 60, icon: '🐠', location: 'lake' },
+        { type: 'catch_fish', fish: 'Карась', count: 8, xp: 70, icon: '🎣', location: 'lake' },
+        { type: 'catch_fish', fish: 'Окунь', count: 5, xp: 80, icon: '🦈', location: 'lake' },
+        { type: 'catch_fish', fish: 'Красноперка', count: 7, xp: 65, icon: '🐟', location: 'lake' },
+        { type: 'catch_fish', fish: 'Густера', count: 6, xp: 70, icon: '🐠', location: 'lake' },
+        { type: 'catch_fish', fish: 'Лещ', count: 3, xp: 100, icon: '🏆', location: 'lake' },
+        { type: 'catch_fish', fish: 'Щука', count: 2, xp: 120, icon: '🦈', location: 'lake' },
+        { type: 'catch_fish', fish: 'Линь', count: 3, xp: 110, icon: '🎯', location: 'lake' },
+        { type: 'catch_fish', fish: 'Карп', count: 2, xp: 130, icon: '👑', location: 'lake' },
+        { type: 'catch_fish', fish: 'Судак', count: 1, xp: 150, icon: '⭐', location: 'lake' },
+        { type: 'catch_fish', fish: 'Налим', count: 1, xp: 160, icon: '🌟', location: 'lake' },
+        { type: 'catch_fish', fish: 'Креветка', count: 15, xp: 50, icon: '🦐', location: 'sea' },
+        { type: 'catch_fish', fish: 'Сардина', count: 12, xp: 55, icon: '🐟', location: 'sea' },
+        { type: 'catch_fish', fish: 'Ставрида', count: 10, xp: 60, icon: '🐠', location: 'sea' },
+        { type: 'catch_fish', fish: 'Медуза', count: 8, xp: 65, icon: '🪼', location: 'sea' },
+        { type: 'catch_fish', fish: 'Скумбрия', count: 5, xp: 85, icon: '🐟', location: 'sea' },
+        { type: 'catch_fish', fish: 'Камбала', count: 4, xp: 95, icon: '🐠', location: 'sea' },
+        { type: 'catch_fish', fish: 'Барракуда', count: 3, xp: 115, icon: '🦈', location: 'sea' },
+        { type: 'catch_fish', fish: 'Кальмар', count: 2, xp: 140, icon: '🦑', location: 'sea' },
+        { type: 'catch_fish', fish: 'Тунец', count: 2, xp: 150, icon: '⭐', location: 'sea' },
+        { type: 'catch_fish', fish: 'Осьминог', count: 1, xp: 170, icon: '🐙', location: 'sea' },
+        { type: 'catch_any', count: 20, xp: 80, icon: '🎒', location: 'both' },
+        { type: 'catch_any', count: 35, xp: 140, icon: '🏅', location: 'both' }
     ];
 
     function setBait(type, el) {
@@ -639,15 +649,44 @@
             `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
+    function seededRandom(seed) {
+        // Простая детерминированная функция случайности на основе сида
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+            hash = hash & hash;
+        }
+        const x = Math.sin(hash) * 10000;
+        return x - Math.floor(x);
+    }
+
     function generateDailyTasks() {
-        const shuffled = [...DAILY_TASKS_POOL].sort(() => Math.random() - 0.5);
+        // Используем только дату как сид для одинаковых заданий у всех
+        const today = getTodayDate();
+        const seed = today;
+        
+        // Детерминированное перемешивание на основе сида
+        let randIndex = 0;
+        const seededShuffle = (arr) => {
+            const shuffled = [...arr];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                randIndex++;
+                const j = Math.floor(seededRandom(seed + randIndex) * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        };
+        
+        const shuffled = seededShuffle(DAILY_TASKS_POOL);
+        
+        // Выбираем 2 случайных задания из общего пула
         return shuffled.slice(0, 2);
     }
 
     async function loadDailyTasks() {
         if (!nickname) return;
         const today = getTodayDate();
-        
+
         // Проверяем, есть ли задания на сегодня
         const { data: existing } = await db.from("daily_tasks")
             .select("*")
@@ -662,7 +701,7 @@
                 .delete()
                 .eq("nickname", nickname)
                 .neq("date_assigned", today);
-            
+
             // Создаём новые задания на сегодня
             const newTasks = generateDailyTasks();
             dailyTasks = [];
@@ -673,7 +712,8 @@
                     target_fish: task.fish || null,
                     target_count: task.count,
                     reward_xp: task.xp,
-                    date_assigned: today
+                    date_assigned: today,
+                    location: task.location || 'lake'
                 }]).select().single();
                 if (data) dailyTasks.push(data);
             }
@@ -684,22 +724,23 @@
     function renderDailyTasks() {
         const panel = document.getElementById("daily-tasks-panel");
         const list = document.getElementById("daily-tasks-list");
-        
+
         if (dailyTasks.length === 0) {
             panel.classList.add("hidden");
             return;
         }
-        
+
         panel.classList.remove("hidden");
         list.innerHTML = dailyTasks.map(task => {
             const progress = Math.min(100, (task.current_count / task.target_count) * 100);
             const completed = task.current_count >= task.target_count && !task.claimed;
-            
+            const locationIcon = task.location === 'sea' ? '🌊' : task.location === 'lake' ? '🏞️' : '🌍';
+
             return `
             <div class="daily-task ${task.current_count >= task.target_count ? 'completed' : ''}">
                 <div class="task-icon">${task.target_fish ? getFishIcon(task.target_fish) : '🎣'}</div>
                 <div class="task-info">
-                    <div class="task-desc">Поймать ${task.target_count} ${task.target_fish || 'рыб'}</div>
+                    <div class="task-desc">${locationIcon} Поймать ${task.target_count} ${task.target_fish || 'рыб'}</div>
                     <div class="task-progress">${task.current_count} / ${task.target_count}</div>
                     <div class="task-bar-bg">
                         <div class="task-bar-fill" style="width: ${progress}%"></div>
@@ -728,17 +769,6 @@
         const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
         const period = getWeatherPeriod();
         return `${dateStr}-${period}`;
-    }
-
-    function seededRandom(seed) {
-        // Simple seeded random function
-        let hash = 0;
-        for (let i = 0; i < seed.length; i++) {
-            hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-            hash = hash & hash;
-        }
-        const x = Math.sin(hash) * 10000;
-        return x - Math.floor(x);
     }
 
     function getCurrentWeather() {
@@ -837,7 +867,7 @@
 
         // Apply new background
         applyLocationBackground();
-        
+
         // Update fishing placeholder background
         const placeholder = document.getElementById("trophy-placeholder");
         if (placeholder) {
