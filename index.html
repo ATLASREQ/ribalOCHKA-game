@@ -538,6 +538,36 @@
         corn: 'кукурузу'
     };
 
+    // Список валидных рыб для защиты от читеров
+    const VALID_FISH_NAMES = [
+        'Сапог', 'Банка', 'Ржавая цепь', 'Бутылка',
+        'Уклейка', 'Плотва', 'Карась', 'Окунь', 'Красноперка', 'Густера',
+        'Лещ', 'Линь', 'Щука', 'Судак', 'Карп', 'Налим', 'Сом',
+        'Осетр', 'Белуга', 'Золотая рыбка',
+        'Водоросли', 'Медуза', 'Креветка', 'Сардина', 'Ставрида',
+        'Скумбрия', 'Камбала', 'Барракуда', 'Тунец', 'Кальмар', 'Осьминог',
+        'Морской дьявол', 'Белая акула', 'Рыба-клоун',
+        'Рыбоохрана'
+    ];
+
+    // Функция валидации улова (защита от читеров)
+    function validateCatch(fishName, weight) {
+        if (!VALID_FISH_NAMES.includes(fishName)) {
+            console.error(`[ANTI-CHEAT] Недопустимая рыба: ${fishName}`);
+            return false;
+        }
+        const fish = fishes.find(f => f.name === fishName);
+        if (!fish) {
+            console.error(`[ANTI-CHEAT] Рыба не найдена в базе: ${fishName}`);
+            return false;
+        }
+        if (weight < fish.minW || weight > fish.maxW) {
+            console.error(`[ANTI-CHEAT] Недопустимый вес ${weight} для ${fishName} (должно быть ${fish.minW}-${fish.maxW})`);
+            return false;
+        }
+        return true;
+    }
+
     const fishes = [
         // === БОБРОВОЕ ОЗЕРО (пресноводные) ===
         { name: "Сапог", rarity: "common", chance: 5, minW: 0.7, maxW: 0.7, xp: 0, image: "https://fzsmyifqmsbdkrhchrgs.supabase.co/storage/v1/object/public/images/Sapojina.png", type: "trash", location: "lake" },
@@ -1269,8 +1299,26 @@
             placeholder.style.display = "none";
             perch.classList.remove("struggling");
             document.getElementById("result").innerHTML = `Улов: <span class="${getRarityClass(f.rarity)}">${f.name}</span> (${w}кг)`;
+
+            // ВАЛИДАЦИЯ УЛОВА (защита от читеров)
+            if (!validateCatch(f.name, w)) {
+                console.error("[ANTI-CHEAT] Попытка невалидного улова!");
+                document.getElementById("result").innerHTML = `<span style="color:#e74c3c">❌ Ошибка валидации улова!</span>`;
+                return;
+            }
+
+            // Используем серверную функцию вместо прямого INSERT (защита от читеров)
+            const { data: catchResult, error: catchError } = await db.rpc('add_catch', {
+                p_nickname: nickname,
+                p_fish_name: f.name,
+                p_weight: w
+            });
             
-            await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
+            if (catchError) {
+                console.error("[ANTI-CHEAT] Ошибка при добавлении улова:", catchError);
+                document.getElementById("result").innerHTML = `<span style="color:#e74c3c">❌ Ошибка сохранения улова!</span>`;
+                return;
+            }
             await addXP(f.xp);
             await updateDailyTaskProgress(f.name, w);
 
@@ -1368,8 +1416,25 @@
             const perch = document.getElementById("perch");
             if (perch) perch.classList.remove("struggling");
             document.getElementById("result").innerHTML = `В сети: <span class="${getRarityClass(f.rarity)}">${f.name}</span>!`;
-            
-            await db.from("catches").insert([{ nickname, fish_name: f.name, weight: w }]);
+
+            // ВАЛИДАЦИЯ УЛОВА (защита от читеров)
+            if (!validateCatch(f.name, w)) {
+                console.error("[ANTI-CHEAT] Попытка невалидного улова в сети!");
+                return; // Пропускаем эту рыбу
+            }
+
+            // Используем серверную функцию вместо прямого INSERT (защита от читеров)
+            const { data: catchResult, error: catchError } = await db.rpc('add_catch', {
+                p_nickname: nickname,
+                p_fish_name: f.name,
+                p_weight: w
+            });
+
+            if (catchError) {
+                console.error("[ANTI-CHEAT] Ошибка при добавлении улова в сети:", catchError);
+                return; // Пропускаем эту рыбу
+            }
+
             await addXP(f.xp);
             
             count++;
