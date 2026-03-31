@@ -1187,8 +1187,39 @@
 
     async function saveNick() {
         nickname = document.getElementById("nickname").value.trim();
-        if(!nickname) return; localStorage.setItem("nick", nickname);
-        document.getElementById("auth-panel").classList.add("hidden"); 
+        if(!nickname) return;
+        
+        // Проверка: ник не должен быть названием рыбы
+        const forbiddenNicks = [
+            'сапог', 'банка', 'цепь', 'бутылка',
+            'уклейка', 'плотва', 'карась', 'окунь', 'красноперка', 'густера',
+            'лещ', 'линь', 'щука', 'судак', 'карп', 'налим', 'сом',
+            'осетр', 'белуга', 'золотая рыбка',
+            'водоросли', 'медуза', 'креветка', 'сардина', 'ставрида',
+            'скумбрия', 'камбала', 'барракуда', 'тунец', 'кальмар', 'осьминог',
+            'морской дьявол', 'белая акула', 'рыба-клоун',
+            'рыбоохрана', 'рыба', 'fish'
+        ];
+        
+        if (forbiddenNicks.includes(nickname.toLowerCase())) {
+            alert('❌ Этот ник занят рыбой! Выберите другое имя.');
+            return;
+        }
+        
+        // Проверка: минимальная длина ника
+        if (nickname.length < 3) {
+            alert('❌ Ник должен быть не менее 3 символов.');
+            return;
+        }
+        
+        // Проверка: максимальная длина ника
+        if (nickname.length > 20) {
+            alert('❌ Ник должен быть не более 20 символов.');
+            return;
+        }
+        
+        localStorage.setItem("nick", nickname);
+        document.getElementById("auth-panel").classList.add("hidden");
         syncInventory();
     }
 
