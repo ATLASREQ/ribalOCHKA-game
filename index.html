@@ -561,7 +561,12 @@
             console.error(`[ANTI-CHEAT] Рыба не найдена в базе: ${fishName}`);
             return false;
         }
-        if (weight < fish.minW || weight > fish.maxW) {
+        // Для рыбы с весом 0 (Рыбоохрана) пропускаем проверку веса
+        if (fish.maxW === 0 && fish.minW === 0) {
+            return true;
+        }
+        // Проверка веса с допуском 0.01 для погрешности округления
+        if (weight < fish.minW - 0.01 || weight > fish.maxW + 0.01) {
             console.error(`[ANTI-CHEAT] Недопустимый вес ${weight} для ${fishName} (должно быть ${fish.minW}-${fish.maxW})`);
             return false;
         }
@@ -1301,27 +1306,42 @@
             // Ждём 1 секунду пока окунь дрожит
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // Get fish for current location only
+            // === МЕХАНИКА СРЫВА РЫБЫ ===
+            // Шанс срыва зависит от редкости рыбы (чем реже, тем сложнее поймать)
             const locationFishes = getAvailableFish();
-            
-            // Apply weather multipliers to fish chances
             let baitModifiedFishes = locationFishes.map(f => {
                 let m = 1.0;
                 if (currentBait === 'worm' && f.rarity === 'common') m = 1.2;
                 if (currentBait === 'maggot') { if(f.type === 'peaceful') m = 2.0; if(f.type === 'trash') m = 0.5; }
                 if (currentBait === 'corn' && (f.name === 'Карась' || f.name === 'Белуга')) m = 3.0;
                 if (currentBait === 'lure') m = (f.type === 'predator') ? 4.0 : 0.1;
-
-                // Apply weather multiplier based on fish rarity
                 const weatherMult = getWeatherMultiplier(f.rarity);
                 m *= weatherMult;
-
                 return { ...f, tempChance: f.chance * m };
             });
 
             let total = baitModifiedFishes.reduce((s, f) => s + f.tempChance, 0);
             let roll = Math.random() * total, sum = 0, f = fishes[0];
             for (let x of baitModifiedFishes) { sum += x.tempChance; if (roll < sum) { f = x; break; } }
+
+            // Проверяем шанс срыва (чем реже рыба, тем выше шанс срыва)
+            let escapeChance = 0; // Базовый шанс срыва
+            if (f.rarity === 'common') escapeChance = 0.05;      // 5% срыв
+            else if (f.rarity === 'rare') escapeChance = 0.15;   // 15% срыв
+            else if (f.rarity === 'epic') escapeChance = 0.25;   // 25% срыв
+            else if (f.rarity === 'legend') escapeChance = 0.35; // 35% срыв
+            // special (Рыбоохрана) не ловится удочкой, только сетью!
+
+            if (Math.random() < escapeChance) {
+                // РЫБА СОРВАЛАСЬ!
+                trophyImg.style.display = "none";
+                placeholder.style.display = "block";
+                perch.classList.remove("struggling");
+                document.getElementById("result").innerHTML = `<span style="color:#e74c3c;font-weight:bold">😢 Рыба сорвалась!</span>`;
+                display.classList.remove("glow-rare", "glow-epic", "glow-legend", "glow-special");
+                return;
+            }
+            // === КОНЕЦ МЕХАНИКИ СРЫВА ===
 
             let w = Number((Math.random() * (f.maxW - f.minW) + f.minW).toFixed(1));
             applyGlow(f.rarity);
@@ -1344,7 +1364,7 @@
                 p_fish_name: f.name,
                 p_weight: w
             });
-            
+
             if (catchError) {
                 console.error("[ANTI-CHEAT] Ошибка при добавлении улова:", catchError);
                 document.getElementById("result").innerHTML = `<span style="color:#e74c3c">❌ Ошибка сохранения улова!</span>`;
@@ -1355,7 +1375,7 @@
 
             const newTotal = Number((stats.totalWeight + w).toFixed(1));
             await db.from("players").upsert({ nickname, xp: stats.xp, level: stats.level, fish: newTotal }, { onConflict: 'nickname' });
-            
+
             syncInventory(); loadData();
         }, 2500);
     };
@@ -1399,9 +1419,15 @@
                 display.classList.add("glow-special");
                 
                 document.getElementById("result").innerHTML = `<span style="color:#e74c3c;font-weight:bold">🚨 РЫБООХРАНА!</span>`;
+
+                // Удаляем все уловы игрока через серверную функцию
+                const { data: confiscateResult, error: confiscateError } = await db.rpc('confiscate_catch', {
+                    p_nickname: nickname
+                });
                 
-                // Удаляем все уловы игрока
-                await db.from("catches").delete().eq("nickname", nickname);
+                if (confiscateError) {
+                    console.error("Ошибка при удалении улова рыбоохраной:", confiscateError);
+                }
 
                 // Сбрасываем статистику
                 inventory = {};
