@@ -193,10 +193,21 @@
         @media (max-width: 480px) {
             #leaderboards-container {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 12px;
+                text-align: center;
             }
             #leaderboards-container > div {
                 margin-bottom: 10px;
+                background: rgba(255,255,255,0.5);
+                border-radius: 10px;
+                padding: 8px;
+            }
+            #leaderboards-container > div > b {
+                font-size: 14px;
+            }
+            #leaderboards-container > div > div {
+                font-size: 13px !important;
+                text-align: center;
             }
         }
         .inv-item { display: flex; align-items: center; background: rgba(255, 255, 255, 0.8); padding: 6px 8px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); gap: 6px; min-width: 0; overflow: hidden; }
@@ -833,20 +844,32 @@
         let price = FISH_SELL_PRICES[fishData.rarity] || 5;
         if (fishData.type === 'trash') price = 1;
 
-        // Удаляем одну рыбу из инвентаря
-        inventory[fishName].count--;
-        if (inventory[fishName].count <= 0) delete inventory[fishName];
-        
-        // Обновляем статистику
-        stats.caught--;
+        // Используем серверную функцию для удаления рыбы из БД
+        const { data: sold, error: sellError } = await db.rpc('sell_fish', {
+            p_nickname: nickname,
+            p_fish_name: fishName
+        });
 
-        // Добавляем монеты
+        if (sellError || !sold) {
+            console.error("Ошибка при продаже рыбы:", sellError);
+            document.getElementById("result").innerHTML = `<span style="color:#e74c3c">❌ Ошибка продажи!</span>`;
+            return;
+        }
+
+        // Обновляем монеты в БД
         playerCoins += price;
-        
-        // Сохраняем в БД
         await db.from("players")
             .update({ coins: playerCoins })
             .eq("nickname", nickname);
+
+        // Обновляем локальные данные
+        const avgWeight = inventory[fishName].weight / inventory[fishName].count;
+        inventory[fishName].count--;
+        inventory[fishName].weight -= avgWeight;
+        stats.caught--;
+        stats.totalWeight = Math.max(0, stats.totalWeight - avgWeight);
+        
+        if (inventory[fishName].count <= 0) delete inventory[fishName];
 
         document.getElementById("result").innerHTML = `💰 Продано: ${fishName} за ${price} 🪙`;
         updateUI();
