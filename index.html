@@ -19,7 +19,7 @@
             background-size: cover;
         }
 
-        .container { max-width: 500px; margin: 0 auto; position: relative; z-index: 1; }
+        .container { max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
         .panel { 
             background: var(--panel); padding: 20px; margin-bottom: 20px; border-radius: 20px; 
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1); border: 1px solid rgba(255,255,255,0.4); 
@@ -127,13 +127,13 @@
             margin-top: 15px;
             margin-bottom: 15px; 
         }
-        .bait-btn { 
-            width: 50px; height: 50px; padding: 5px; background: white; 
+        .bait-btn {
+            width: 60px; height: 75px; padding: 4px; background: white;
             border: 2px solid #ddd; border-radius: 12px; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 20px; transition: all 0.2s;
+            font-size: 22px; transition: all 0.2s; gap: 2px;
         }
-        .bait-btn span { font-size: 8px; font-weight: bold; text-transform: uppercase; margin-top: 2px; color: #777; }
+        .bait-btn span { font-size: 9px; font-weight: bold; text-transform: uppercase; margin-top: 1px; color: #777; line-height: 1.2; }
         .bait-btn.active { border-color: var(--primary); background: #eef6ff; transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,119,255,0.2); }
         .bait-btn.active span { color: var(--primary); }
 
@@ -169,14 +169,53 @@
         #chat-box { height: 150px; overflow-y: auto; background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 10px; font-size: 14px; text-align: left; margin-bottom: 10px; border: 1px solid #ddd; }
         .chat-line { margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 2px; }
         
-        #inventory-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-        
+        #inventory-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+
         /* Адаптив для мобильных */
         @media (max-width: 480px) {
-            #inventory-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            #inventory-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
         }
-        .inv-item { display: flex; align-items: center; background: rgba(255, 255, 255, 0.8); padding: 8px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); }
-        .inv-icon { width: 35px; height: 35px; margin-right: 8px; object-fit: cover; border-radius: 6px; }
+        
+        /* Топ рыболовов - 3 колонки на ПК, 1 на телефоне */
+        #leaderboards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        #leaderboards-container > div {
+            overflow: hidden;
+        }
+        #leaderboards-container > div > div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        @media (max-width: 480px) {
+            #leaderboards-container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            #leaderboards-container > div {
+                margin-bottom: 10px;
+            }
+        }
+        .inv-item { display: flex; align-items: center; background: rgba(255, 255, 255, 0.8); padding: 6px 8px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); gap: 6px; min-width: 0; overflow: hidden; }
+        .inv-icon { width: 32px; height: 32px; margin-right: 0; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+        
+        /* Стили для кнопок продажи */
+        .sell-btn {
+            padding: 6px 10px; font-size: 13px; background: #27ae60; color: white;
+            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 2px 0 #1e8449; white-space: nowrap; flex-shrink: 0;
+        }
+        .sell-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #1e8449; }
+        
+        /* Стили для заблокированного моря */
+        .location-btn.sea.locked {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            border-color: #6c7a7d;
+            color: #ecf0f1;
+        }
 
         .rare-txt { color: var(--rare) !important; font-weight: bold !important; }
         .epic-txt { color: var(--epic) !important; font-weight: bold !important; }
@@ -185,11 +224,60 @@
 
         /* Main title styles */
         .game-title {
-            font-size: 32px; font-weight: 800; margin-bottom: 20px;
+            font-size: 28px; font-weight: 800; margin-bottom: 20px;
             color: #ffffff;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             letter-spacing: 1px;
             display: inline-block;
+            margin-right: 15px;
+        }
+        
+        /* Header container */
+        .header-row {
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; position: relative;
+        }
+        
+        /* Logout button */
+        #logoutBtn {
+            position: relative;
+            background: #e74c3c;
+            box-shadow: 0 4px 0 #c0392b;
+            padding: 8px 15px;
+            font-size: 13px;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* Ticket button */
+        .ticket-mini-btn {
+            padding: 8px 12px;
+            background: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 3px 0 #d35400;
+            position: relative;
+            margin-left: 8px;
+        }
+        .ticket-mini-btn:hover::after {
+            content: "Билет на море";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            pointer-events: none;
         }
 
         /* Daily tasks styles */
@@ -417,11 +505,16 @@
 <body>
 <div class="weather-effect" id="weather-effect"></div>
 <div class="container">
-    <h1 class="game-title">🎣 Дизайнерская Рыбалка</h1>
+    <div class="header-row">
+        <h1 class="game-title">🎣 Дизайнерская Рыбалка</h1>
+        <button id="logoutBtn" class="hidden" onclick="logout()">🚪 Выйти</button>
+    </div>
 
     <div class="panel" id="auth-panel">
-        <input type="text" id="nickname" style="width:65%" placeholder="Твой позывной...">
-        <button onclick="saveNick()">💾</button>
+        <input type="text" id="nickname" style="width:100%; margin-bottom:10px; box-sizing:border-box;" placeholder="Твой позывной...">
+        <input type="password" id="pincode" maxlength="5" pattern="[0-9]*" inputmode="numeric" style="width:100%; margin-bottom:10px; box-sizing:border-box;" placeholder="PIN-код (5 цифр)">
+        <button onclick="saveNick()" style="width:100%;">💾 Войти</button>
+        <div id="auth-error" style="color:#e74c3c; font-size:13px; margin-top:8px; display:none;"></div>
     </div>
 
     <div class="panel" id="main-game">
@@ -442,8 +535,11 @@
             <button class="location-btn lake active" id="loc-btn-lake" onclick="switchLocation('lake')">
                 <span>🏞️</span> Бобровое озеро
             </button>
-            <button class="location-btn sea" id="loc-btn-sea" onclick="switchLocation('sea')" disabled>
-                <span>🌊</span> Море
+            <button class="location-btn sea locked" id="loc-btn-sea" onclick="switchLocation('sea')" disabled>
+                <span>🔒</span> Море
+            </button>
+            <button class="ticket-mini-btn hidden" id="ticket-mini-btn" onclick="buySeaTicket()" title="Билет на море">
+                🎫 100
             </button>
         </div>
         <div id="location-timer" class="location-timer"></div>
@@ -472,10 +568,10 @@
         </div>
 
         <div class="bait-group">
-            <div class="bait-btn active" onclick="setBait('worm', this)">🐛<span>Червь</span></div>
-            <div class="bait-btn" onclick="setBait('maggot', this)">🪰<span>Опарыш</span></div>
-            <div class="bait-btn" onclick="setBait('lure', this)">✨<span>Блесна</span></div>
-            <div class="bait-btn" onclick="setBait('corn', this)">🌽<span>Кукуруза</span></div>
+            <div class="bait-btn active" onclick="setBait('worm', this)">🐛<span>Червь</span><span style="color:#27ae60;font-size:9px;font-weight:bold;">Бесплатно</span></div>
+            <div class="bait-btn" onclick="setBait('maggot', this)">🪰<span>Опарыш</span><span style="color:#e67e22;font-size:12px;font-weight:bold;">5 🪙</span></div>
+            <div class="bait-btn" onclick="setBait('lure', this)">✨<span>Блесна</span><span style="color:#e74c3c;font-size:12px;font-weight:bold;">15 🪙</span></div>
+            <div class="bait-btn" onclick="setBait('corn', this)">🌽<span>Кукуруза</span><span style="color:#f39c12;font-size:12px;font-weight:bold;">8 🪙</span></div>
         </div>
 
         <div id="timer" style="color: #e74c3c; font-weight:bold; min-height: 20px;"></div>
@@ -508,6 +604,7 @@
         <div style="display:flex; justify-content:space-around; font-weight:bold; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
             <span>⚖️ <span id="stat-weight">0</span> кг</span>
             <span>🐟 <span id="stat-count">0</span> шт</span>
+            <span>🪙 <span id="stat-coins">0</span></span>
         </div>
         <div id="best-catch-box">
             <div style="font-size: 24px;">🏆</div>
@@ -522,7 +619,20 @@
 
     <div class="panel">
         <h3 style="margin-top:0;">🏆 Топ рыболовов</h3>
-        <div id="leaderboard" style="text-align:left;">...</div>
+        <div id="leaderboards-container">
+            <div id="leaderboard-all" style="text-align:left;">
+                <b style="color:#3498db;">📊 Всё время</b>
+                <div id="leaderboard-all-list" style="margin-top:5px;">...</div>
+            </div>
+            <div id="leaderboard-month" style="text-align:left;">
+                <b style="color:#2ecc71;">📅 Месяц</b>
+                <div id="leaderboard-month-list" style="margin-top:5px;">...</div>
+            </div>
+            <div id="leaderboard-today" style="text-align:left;">
+                <b style="color:#e74c3c;">🌅 Сегодня</b>
+                <div id="leaderboard-today-list" style="margin-top:5px;">...</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -536,6 +646,14 @@
         maggot: 'опарыша',
         lure: 'блесну',
         corn: 'кукурузу'
+    };
+
+    // Цены наживок в монетах
+    const BAIT_PRICES = {
+        worm: 0,    // Червь - бесплатный
+        maggot: 5,  // Опарыш
+        lure: 15,   // Блесна - самая дорогая
+        corn: 8     // Кукуруза
     };
 
     // Список валидных рыб для защиты от читеров
@@ -627,6 +745,21 @@
     let dailyTasks = [];
     let currentWeather = null;
     
+    // === ЭКОНОМИКА И БИЛЕТЫ ===
+    let playerCoins = 0;
+    let seaCasts = 0;
+    const SEA_TICKET_PRICE = 100;
+    const SEA_TICKET_CASTS = 5;
+    
+    // Цены продажи рыбы за штуку
+    const FISH_SELL_PRICES = {
+        common: 5,
+        rare: 20,
+        epic: 60,
+        legend: 250,
+        special: 1
+    };
+    
     // Weather types with multipliers for different fish rarities
     const WEATHER_TYPES = [
         { id: 'sunny', name: 'Солнечно', icon: '☀️', class: '', 
@@ -686,6 +819,79 @@
         { type: 'catch_any', count: 20, xp: 80, icon: '🎒', location: 'both' },
         { type: 'catch_any', count: 35, xp: 140, icon: '🏅', location: 'both' }
     ];
+
+    // === ФУНКЦИИ ЭКОНОМИКИ ===
+    
+    // Продажа рыбы
+    async function sellFish(fishName) {
+        if (!inventory[fishName] || inventory[fishName].count <= 0) return;
+
+        const fishData = fishes.find(f => f.name === fishName);
+        if (!fishData) return;
+
+        // Определяем цену
+        let price = FISH_SELL_PRICES[fishData.rarity] || 5;
+        if (fishData.type === 'trash') price = 1;
+
+        // Удаляем одну рыбу из инвентаря
+        inventory[fishName].count--;
+        if (inventory[fishName].count <= 0) delete inventory[fishName];
+        
+        // Обновляем статистику
+        stats.caught--;
+
+        // Добавляем монеты
+        playerCoins += price;
+        
+        // Сохраняем в БД
+        await db.from("players")
+            .update({ coins: playerCoins })
+            .eq("nickname", nickname);
+
+        document.getElementById("result").innerHTML = `💰 Продано: ${fishName} за ${price} 🪙`;
+        updateUI();
+    }
+
+    // Покупка билета на море
+    async function buySeaTicket() {
+        if (playerCoins < SEA_TICKET_PRICE) {
+            alert(`❌ Недостаточно монет! Нужно ${SEA_TICKET_PRICE} 🪙`);
+            return;
+        }
+
+        if (confirm(`Купить ${SEA_TICKET_CASTS} забросов на море за ${SEA_TICKET_PRICE} монет?`)) {
+            playerCoins -= SEA_TICKET_PRICE;
+            seaCasts += SEA_TICKET_CASTS;
+
+            await db.from("players")
+                .update({ coins: playerCoins, sea_casts: seaCasts })
+                .eq("nickname", nickname);
+
+            document.getElementById("result").innerHTML = `🎫 Билет куплен! Осталось забросов: ${seaCasts}`;
+            updateLocationUI();
+            updateUI();
+        }
+    }
+
+    // Обновление интерфейса локаций
+    function updateLocationUI() {
+        const seaBtn = document.getElementById("loc-btn-sea");
+        const ticketBtn = document.getElementById("ticket-mini-btn");
+
+        if (seaCasts > 0) {
+            // Море открыто
+            seaBtn.disabled = false;
+            seaBtn.classList.remove("locked");
+            seaBtn.innerHTML = `<span>🌊</span> Море (${seaCasts})`;
+            ticketBtn.classList.add("hidden");
+        } else {
+            // Море закрыто
+            seaBtn.disabled = true;
+            seaBtn.classList.add("locked");
+            seaBtn.innerHTML = `<span>🔒</span> Море`;
+            ticketBtn.classList.remove("hidden");
+        }
+    }
 
     function setBait(type, el) {
         currentBait = type;
@@ -962,6 +1168,12 @@
 
     function switchLocation(loc) {
         if (!nickname || loc === currentLocation) return;
+        
+        // Проверка билетов для моря
+        if (loc === 'sea' && seaCasts <= 0) {
+            alert("🔒 Море закрыто! Сначала купи билет.");
+            return;
+        }
 
         const locData = LOCATIONS[loc];
         if (!locData) return;
@@ -1105,6 +1317,10 @@
         inventory = {};
         stats = { caught: 0, totalWeight: 0, xp: player?.xp || 0, level: player?.level || 1 };
         bestF = { weight: 0 };
+        
+        // Загружаем монеты и билеты
+        playerCoins = player?.coins || 0;
+        seaCasts = player?.sea_casts || 0;
 
         if (catches) catches.forEach(c => {
             if (!inventory[c.fish_name]) inventory[c.fish_name] = { count: 0, weight: 0 };
@@ -1113,6 +1329,7 @@
             if (c.weight > bestF.weight) bestF = { weight: c.weight, name: c.fish_name, img: fishes.find(f=>f.name===c.fish_name)?.image };
         });
         updateUI();
+        updateLocationUI();
         checkTimers();
         loadDailyTasks();
     }
@@ -1120,6 +1337,7 @@
     function updateUI() {
         document.getElementById("stat-weight").innerText = stats.totalWeight.toFixed(1);
         document.getElementById("stat-count").innerText = stats.caught;
+        document.getElementById("stat-coins").innerText = playerCoins;
         const nextLvlXp = Math.floor(100 * Math.pow(1.2, stats.level - 1));
         document.getElementById("lvl-val").innerText = stats.level;
         document.getElementById("xp-val").innerText = stats.xp;
@@ -1134,7 +1352,18 @@
         let html = "";
         for (let name in inventory) {
             let f = fishes.find(x => x.name === name);
-            if(f) html += `<div class="inv-item"><img src="${f.image}" class="inv-icon"><div><b>${name}</b><br>${inventory[name].count} шт.</div></div>`;
+            if(f) {
+                let price = FISH_SELL_PRICES[f.rarity] || 5;
+                if (f.type === 'trash') price = 1;
+                html += `<div class="inv-item">
+                    <img src="${f.image}" class="inv-icon">
+                    <div style="flex:1; text-align:left; overflow:hidden; min-width:0;">
+                        <b style="font-size:12px; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${name}</b>
+                        <span style="font-size:11px;">${inventory[name].count} шт.</span>
+                    </div>
+                    <button class="sell-btn" onclick="sellFish('${name}')">💰${price}</button>
+                </div>`;
+            }
         }
         document.getElementById("inventory-grid").innerHTML = html;
     }
@@ -1192,8 +1421,20 @@
 
     async function saveNick() {
         nickname = document.getElementById("nickname").value.trim();
-        if(!nickname) return;
+        const pinInput = document.getElementById("pincode").value.trim();
+        const errorEl = document.getElementById("auth-error");
         
+        if(!nickname) {
+            showError("Введи позывной!");
+            return;
+        }
+        
+        // Проверка PIN-кода
+        if(!pinInput || pinInput.length !== 5 || !/^\d{5}$/.test(pinInput)) {
+            showError("PIN-код должен быть 5 цифр!");
+            return;
+        }
+
         // Проверка: ник не должен быть названием рыбы
         const forbiddenNicks = [
             'сапог', 'банка', 'цепь', 'бутылка',
@@ -1205,42 +1446,134 @@
             'морской дьявол', 'белая акула', 'рыба-клоун',
             'рыбоохрана', 'рыба', 'fish'
         ];
-        
+
         if (forbiddenNicks.includes(nickname.toLowerCase())) {
-            alert('❌ Этот ник занят рыбой! Выберите другое имя.');
+            showError('❌ Этот ник занят рыбой!');
             return;
         }
-        
-        // Проверка: минимальная длина ника
+
         if (nickname.length < 3) {
-            alert('❌ Ник должен быть не менее 3 символов.');
+            showError('❌ Минимум 3 символа!');
             return;
         }
-        
-        // Проверка: максимальная длина ника
+
         if (nickname.length > 20) {
-            alert('❌ Ник должен быть не более 20 символов.');
+            showError('❌ Максимум 20 символов!');
             return;
         }
         
+        // Проверяем PIN через серверную функцию
+        const { data: isValid, error } = await db.rpc('verify_player_pin', {
+            p_nickname: nickname,
+            p_pin: pinInput
+        });
+        
+        if (error) {
+            showError('Ошибка подключения!');
+            console.error(error);
+            return;
+        }
+        
+        if (!isValid) {
+            showError('❌ Неверный PIN-код!');
+            return;
+        }
+
+        errorEl.style.display = "none";
         localStorage.setItem("nick", nickname);
+        localStorage.setItem("pin", pinInput); // Сохраняем PIN
         document.getElementById("auth-panel").classList.add("hidden");
+        document.getElementById("logoutBtn").classList.remove("hidden"); // Показываем кнопку выхода
         syncInventory();
+    }
+    
+    function showError(msg) {
+        const errorEl = document.getElementById("auth-error");
+        errorEl.textContent = msg;
+        errorEl.style.display = "block";
+        setTimeout(() => { errorEl.style.display = "none"; }, 3000);
+    }
+    
+    // Выход из аккаунта
+    function logout() {
+        localStorage.removeItem("nick");
+        localStorage.removeItem("pin");
+        location.reload();
+    }
+
+    // Загрузка всех 3 топов одновременно
+    async function loadLeaderboard() {
+        try {
+            // 1. Топ за всё время
+            const allEl = document.getElementById("leaderboard-all-list");
+            const { data: topAll } = await db.from("players").select("*").order("fish", { ascending: false }).limit(5);
+            if (topAll && topAll.length > 0) {
+                allEl.innerHTML = topAll.map((p, i) => 
+                    `<div style="font-size:12px; margin-bottom:3px;"><b>${i+1}.</b> ${p.nickname}: <b>${p.fish} кг</b></div>`
+                ).join("");
+            } else {
+                allEl.innerHTML = '<div style="font-size:12px;">Пока нет данных</div>';
+            }
+
+            // 2. Топ за месяц
+            const monthEl = document.getElementById("leaderboard-month-list");
+            const now = new Date();
+            const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+            const { data: catchesMonth } = await db.from("catches")
+                .select("nickname, weight")
+                .gte("created_at", monthAgo.toISOString());
+            
+            if (catchesMonth && catchesMonth.length > 0) {
+                const totals = {};
+                catchesMonth.forEach(c => {
+                    totals[c.nickname] = (totals[c.nickname] || 0) + c.weight;
+                });
+                const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                monthEl.innerHTML = sorted.map(([name, weight], i) => 
+                    `<div style="font-size:12px; margin-bottom:3px;"><b>${i+1}.</b> ${name}: <b>${weight.toFixed(1)} кг</b></div>`
+                ).join("") || '<div style="font-size:12px;">Пока нет данных</div>';
+            } else {
+                monthEl.innerHTML = '<div style="font-size:12px;">Пока нет данных</div>';
+            }
+
+            // 3. Топ за сегодня
+            const todayEl = document.getElementById("leaderboard-today-list");
+            const today = new Date().toISOString().split('T')[0];
+            const { data: catchesToday } = await db.from("catches")
+                .select("nickname, weight")
+                .gte("created_at", `${today}T00:00:00`);
+            
+            if (catchesToday && catchesToday.length > 0) {
+                const totals = {};
+                catchesToday.forEach(c => {
+                    totals[c.nickname] = (totals[c.nickname] || 0) + c.weight;
+                });
+                const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                todayEl.innerHTML = sorted.map(([name, weight], i) => 
+                    `<div style="font-size:12px; margin-bottom:3px;"><b>${i+1}.</b> ${name}: <b>${weight.toFixed(1)} кг</b></div>`
+                ).join("") || '<div style="font-size:12px;">Пока нет данных</div>';
+            } else {
+                todayEl.innerHTML = '<div style="font-size:12px;">Пока нет данных</div>';
+            }
+        } catch (e) {
+            console.error("Ошибка загрузки топа:", e);
+        }
     }
 
     async function loadData() {
         try {
-            const { data: top } = await db.from("players").select("*").order("fish", { ascending: false }).limit(10);
-            if (top) document.getElementById("leaderboard").innerHTML = top.map((p, i) => `<b>${i+1}.</b> ${p.nickname}: ⚖️ <b>${p.fish} кг</b> (Lvl ${p.level || 1})`).join("<br>");
+            // Загрузка топа через новую функцию
+            loadLeaderboard();
+            
             const { data: msgs } = await db.from("messages").select("*").order("id", { ascending: false }).limit(10);
             if (msgs) document.getElementById("chat-box").innerHTML = [...msgs].reverse().map(m => `<div class="chat-line"><b style="color:${getNickColor(m.nickname)}">${m.nickname}</b>: ${m.text}</div>`).join("");
             // Прокрутка чата вниз
             const chatBox = document.getElementById("chat-box");
             chatBox.scrollTop = chatBox.scrollHeight;
-            
+
             // Загрузка глобального рекорда
             await loadGlobalRecord();
-            
+
             const { data: hist } = await db.from("catches").select("*").order("created_at", { ascending: false }).limit(5);
             if (hist) document.getElementById("catch-log").innerHTML = hist.map(h => {
                 const fishData = fishes.find(x => x.name === h.fish_name);
@@ -1274,6 +1607,30 @@
     document.getElementById("fishBtn").onclick = async function() {
         if (!nickname) return;
         
+        // Списываем монеты за наживку
+        const baitPrice = BAIT_PRICES[currentBait] || 0;
+        if (baitPrice > 0) {
+            if (playerCoins < baitPrice) {
+                document.getElementById("result").innerHTML = `<span style="color:#e74c3c">❌ Не хватает ${baitPrice} 🪙 на ${BAIT_NAMES[currentBait]}!</span>`;
+                return;
+            }
+            playerCoins -= baitPrice;
+            await db.from("players").update({ coins: playerCoins }).eq("nickname", nickname);
+        }
+
+        // Проверка и списание билета для моря
+        if (currentLocation === 'sea') {
+            if (seaCasts <= 0) {
+                alert("🎫 Билеты закончились! Возвращаемся на озеро.");
+                switchLocation('lake');
+                return;
+            }
+            seaCasts--;
+            // Обновляем в БД и UI
+            await db.from("players").update({ sea_casts: seaCasts }).eq("nickname", nickname);
+            updateLocationUI();
+        }
+
         const { data: check } = await db.from("players").select("last_cast").eq("nickname", nickname).single();
         if (check && check.last_cast) {
             const wait = new Date(check.last_cast).getTime() + 600000;
@@ -1493,7 +1850,8 @@
             }
 
             await addXP(f.xp);
-            
+            await updateDailyTaskProgress(f.name, w); // Обновляем прогресс заданий
+
             count++;
             if(count >= 5) { 
                 clearInterval(int); 
@@ -1513,38 +1871,31 @@
     }
 
     window.onload = function() {
-        if (nickname) {
-            document.getElementById("auth-panel").classList.add("hidden");
-            syncInventory();
-
-            // Load saved location
-            const savedLoc = localStorage.getItem("currentLocation");
-            const savedLocTime = localStorage.getItem("currentLocationTime");
-            if (savedLoc && LOCATIONS[savedLoc]) {
-                currentLocation = savedLoc;
-                currentLocationTime = savedLocTime ? parseInt(savedLocTime) : null;
-
-                // Update UI
-                document.querySelectorAll('.location-btn').forEach(btn => btn.classList.remove('active'));
-                document.getElementById(`loc-btn-${savedLoc}`).classList.add('active');
-
-                // Apply saved location background
-                applyLocationBackground();
-                
-                // Apply fishing placeholder background
-                const placeholder = document.getElementById("trophy-placeholder");
-                if (placeholder) {
-                    placeholder.classList.remove("lake", "sea");
-                    placeholder.classList.add(savedLoc);
-                }
-            }
+        const savedPin = localStorage.getItem("pin");
+        
+        if (nickname && savedPin) {
+            // При авто-входе пробуем использовать сохранённый PIN
+            document.getElementById("nickname").value = nickname;
+            document.getElementById("nickname").disabled = true;
+            document.getElementById("pincode").value = savedPin;
+            document.getElementById("pincode").style.display = "none";
+            document.getElementById("logoutBtn").classList.remove("hidden"); // Показываем кнопку выхода
+            
+            // Автоматически проверяем PIN
+            saveNick();
+        } else if (nickname) {
+            // Ник есть, но PIN не сохранён - просим ввести
+            document.getElementById("nickname").value = nickname;
+            document.getElementById("nickname").disabled = true;
+            document.getElementById("pincode").focus();
+            document.getElementById("pincode").placeholder = "PIN для " + nickname;
         } else {
             document.getElementById("result").innerText = "Представься, рыбак!";
         }
         updateWeather();
         updateLocationButtons();
         loadData();
-        setInterval(loadData, 10000);
+        setInterval(loadData, 600000); // Обновление раз в 10 минут
     };
 </script>
 </body>
